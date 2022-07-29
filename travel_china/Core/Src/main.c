@@ -108,6 +108,7 @@ int main(void)
   MX_USART6_UART_Init();
   Timer5_Init();
   delay_init();
+  user_init();
   /* USER CODE BEGIN 2 */
 
 	

@@ -6,7 +6,7 @@ struct I_pid_obj motor_L0 = {0,0,0,0,0,0};
 struct I_pid_obj motor_L1 = {0,0,0,0,0,0};
 struct I_pid_obj motor_R0 = {0,0,0,0,0,0};
 struct I_pid_obj motor_R1 = {0,0,0,0,0,0};
-struct PID_param motor_pid_param;
+struct PID_param motor_pid_paramL0,motor_pid_paramL1,motor_pid_paramR0,motor_pid_paramR1;
 
 struct P_pid_obj line_pid_obj = {0,0,0,0,0,0};
 struct PID_param line_pid_param;
@@ -88,12 +88,35 @@ float positional_PID (struct P_pid_obj *obj, struct PID_param *pid)
 
 void pid_init(void)
 {
-	motor_pid_param.outputMax = MOTOR_PWM_MAX + 100;
-	motor_pid_param.kp = 50;//55
-	motor_pid_param.ki = 4;//42.0
-	motor_pid_param.kd = 0;//25
-	motor_pid_param.differential_filterK = 0.5;
-	motor_pid_param.actualMax = 200;
+	motor_pid_paramL0.outputMax = MOTOR_PWM_MAX + 100;
+	motor_pid_paramL0.kp = 50;//55
+	motor_pid_paramL0.ki = 4;//42.0
+	motor_pid_paramL0.kd = 0;//25
+	motor_pid_paramL0.differential_filterK = 0.5;
+	motor_pid_paramL0.actualMax = 200;
+	
+	motor_pid_paramL1.outputMax = MOTOR_PWM_MAX + 100;
+	motor_pid_paramL1.kp = 50;//55
+	motor_pid_paramL1.ki = 4;//42.0
+	motor_pid_paramL1.kd = 0;//25
+	motor_pid_paramL1.differential_filterK = 0.5;
+	motor_pid_paramL1.actualMax = 200;
+	
+	
+	motor_pid_paramR0.outputMax = MOTOR_PWM_MAX + 100;
+	motor_pid_paramR0.kp = 50;//55
+	motor_pid_paramR0.ki = 4;//42.0
+	motor_pid_paramR0.kd = 0;//25
+	motor_pid_paramR0.differential_filterK = 0.5;
+	motor_pid_paramR0.actualMax = 200;
+	
+	
+	motor_pid_paramR1.outputMax = MOTOR_PWM_MAX + 100;
+	motor_pid_paramR1.kp = 50;//55
+	motor_pid_paramR1.ki = 4;//42.0
+	motor_pid_paramR1.kd = 0;//25
+	motor_pid_paramR1.differential_filterK = 0.5;
+	motor_pid_paramR1.actualMax = 200;
 	
 	line_pid_param.kp = 12;
 	line_pid_param.ki = 0.003;
@@ -102,9 +125,9 @@ void pid_init(void)
 	line_pid_param.outputMax = 50;
 	line_pid_param.outputMin = -50;
 	
-	gyroT_pid_param.kp = 1.0;
-	gyroT_pid_param.ki = 0.004;
-	gyroT_pid_param.kd = 0.5;
+	gyroT_pid_param.kp = 50.0;//1.0
+	gyroT_pid_param.ki = 0.004;//0.004
+	gyroT_pid_param.kd = 0.5;//0.5
 	gyroT_pid_param.differential_filterK = 1;
 	gyroT_pid_param.outputMax = 80;
 	gyroT_pid_param.outputMin = -80;
@@ -132,24 +155,24 @@ void motor_pid_clear(void)
 //由于usmart不支持浮点数，所以输入一个整数和一个要除以的位数(deno)
 void usmart_pid(uint16_t val,int deno,int mode)
 {
-	float fval=val;
-	switch(mode)
-	{
-		case 1:
-			motor_pid_param.kp=fval/deno;  //mode1: 修改Kp
-			break;
-		case 2:
-			motor_pid_param.ki=fval/deno;  //mode2: Ki
-			break;
-		case 3:
-			motor_pid_param.kd=fval/deno;  //mode3: Kd
-			break;
-		case 4:
-			motor_L0.target=val-deno;  //mode4: Target
-			break;
-	}
-	printf("Kp:%f, Ki:%f, Kd:%f, Target:%d\r\n",
-				motor_pid_param.kp,motor_pid_param.ki,motor_pid_param.kd,motor_L0.target);
+//	float fval=val;
+//	switch(mode)
+//	{
+//		case 1:
+//			motor_pid_param.kp=fval/deno;  //mode1: 修改Kp
+//			break;
+//		case 2:
+//			motor_pid_param.ki=fval/deno;  //mode2: Ki
+//			break;
+//		case 3:
+//			motor_pid_param.kd=fval/deno;  //mode3: Kd
+//			break;
+//		case 4:
+//			motor_L0.target=val-deno;  //mode4: Target
+//			break;
+//	}
+//	printf("Kp:%f, Ki:%f, Kd:%f, Target:%d\r\n",
+//				motor_pid_param.kp,motor_pid_param.ki,motor_pid_param.kd,motor_L0.target);
 }
 void chage_target(uint16_t targetq)
 {
@@ -158,17 +181,17 @@ void chage_target(uint16_t targetq)
 }
 void speed_pid_kp(int param)
 {
-	motor_pid_param.kp=param/10.0;
+	motor_pid_paramL0.kp=param/10.0;
     motor_pid_clear();
 }
 void speed_pid_kd(int param)
 {
-	motor_pid_param.kd=param/10.0;
+	motor_pid_paramL0.kd=param/10.0;
 	motor_pid_clear();
 }
 void speed_pid_ki(int param)
 {
-	motor_pid_param.ki=param/100.0;
+	motor_pid_paramL0.ki=param/100.0;
 	motor_pid_clear();
 }
 

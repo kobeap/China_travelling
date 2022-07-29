@@ -112,7 +112,7 @@ void Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
 	{
 		for (uint8_t i=0; i<sensorNum; i++)
 		{
-			lednum_tmp += (scaner->detail>>(sensorNum-i))&0X01;
+			lednum_tmp += (scaner->detail>>(sensorNum-i))&0X01;//记录点灯数
 			error += ((scaner->detail>>(sensorNum-i))&0X01) * line_weight[i];
 			if ((scaner->detail>>(sensorNum-i)) & 0X01)		//如果是白线
 				if (!((scaner->detail>>((sensorNum-i)+1))&0x01))		//下一个灯不是白
@@ -132,16 +132,16 @@ void Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
 	}
 	else
 	{
-	if (lednum <= 7)  ////防止过多的灯带来的干扰
-	{
-			if(lednum >= 4)     //四个灯以上
-				edge_ignore = 3;	//忽略边缘三个灯
-			for(uint8_t i=edge_ignore; i<sensorNum-edge_ignore; i++) 
-			{
-				lednum_tmp += (scaner->detail>>i)&0X01;
-				error += ((scaner->detail>>i)&0X01) * line_weight[i];
-			}	
-	}
+		if (lednum <= 7)  ////防止过多的灯带来的干扰
+		{
+				if(lednum >= 4)     //四个灯以上
+					edge_ignore = 3;	//忽略边缘三个灯
+				for(uint8_t i=edge_ignore; i<sensorNum-edge_ignore; i++) 
+				{
+					lednum_tmp += (scaner->detail>>i)&0X01;
+					error += ((scaner->detail>>i)&0X01) * line_weight[i];
+				}	
+		}
 		else     //灯太多给俺滚
 			return;
 	}

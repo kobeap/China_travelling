@@ -38,7 +38,7 @@ extern struct I_pid_obj motor_L0;
 extern struct I_pid_obj motor_L1;
 extern struct I_pid_obj motor_R0;
 extern struct I_pid_obj motor_R1;
-extern struct PID_param motor_pid_param;
+extern struct PID_param motor_pid_paramL0,motor_pid_paramL1,motor_pid_paramR0,motor_pid_paramR1;
 
 extern struct P_pid_obj line_pid_obj;
 extern struct PID_param line_pid_param;

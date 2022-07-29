@@ -16,7 +16,7 @@
 */
 void Start_task(void *pvParameters){
 		taskENTER_CRITICAL();  	//进入临界区
-	   	user_init();  
+	//   	user_init();  
 	    main_task_create();            //创建主控任务
 		motor_task_create();
 	    vTaskDelete(Start_handler); //删除开始任务
@@ -49,17 +49,18 @@ void user_init(void){
 	gyro_init(115200);
 
 	motor_init();
+	delay_ms(1000);
 	float mpuZ_reset_val;
-//	  //陀螺仪角度复位，采样10次取平均值
-//	for (int i = 0; i<10; i++)
-//	{
-//		delay_ms(20);
-//		mpuZ_reset_val += imu.yaw;   
-//		imu.compensatePitch += imu.pitch;
-//	}
-//	mpuZ_reset_val /= 10;   // 这是当前的0°角
-//	mpuZreset(mpuZ_reset_val, 0);//把此时角度变为0度
-//	imu.compensatePitch /= 10;//
+	  //陀螺仪角度复位，采样10次取平均值
+	for (uint8_t i = 0; i<10; i++)
+	{
+		delay_ms(20);
+		mpuZ_reset_val += imu.yaw;   
+		imu.compensatePitch += imu.pitch;
+	}
+	mpuZ_reset_val /= 10;   // 这是当前的0°角
+	mpuZreset(mpuZ_reset_val, 0);//把此时角度变为0度
+	imu.compensatePitch /= 10;//
 }
 
 

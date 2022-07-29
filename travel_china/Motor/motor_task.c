@@ -22,32 +22,37 @@ void motor_task(void *pvParameters){
 	portTickType xLastWakeTime;
 	xLastWakeTime = xTaskGetTickCount();   //获取系统节拍
 	static uint8_t mouse = 0;    //小灯鼠
+
 	while(1){
 			get_motor_speed();
 		
-//			Turn_Angle(45);	
+     		runWithAngle(0,300);
 			motor_L0.target = motor_L1.target = motor_all.Lspeed;
 			motor_R0.target = motor_R1.target = motor_all.Rspeed;
-							mouse++;
-					if(mouse>100){
+			mouse++;
+			if(mouse>100){
 						mouse =0;
 //						LED_twinkle();
 				HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_1);
 			}
-//			motor_L0.target = motor_L1.target = 200;
-//			motor_R0.target = motor_R1.target = 200;
-//			incremental_PID(&motor_L0, &motor_pid_param);
-//			incremental_PID(&motor_L1, &motor_pid_param);
-//			incremental_PID(&motor_R0, &motor_pid_param);
-//			incremental_PID(&motor_R1, &motor_pid_param);
-//			
-//			motor_set_pwm(1, (int32_t)motor_L0.output);
-//			motor_set_pwm(2, (int32_t)motor_L1.output);
-//			motor_set_pwm(3, (int32_t)motor_R0.output);
-//	  	    motor_set_pwm(4, (int32_t)motor_R1.output);
- 
-//		printf("%5d  %5d %5d %5d\r\n",(int)motor_L0.measure,(int)motor_L1.measure,(int)motor_R0.measure,(int)motor_R1.measure);
-//		printf("%d,%d\r\n",(int)motor_R1.measure,(int)motor_R1.target);
+//			TIM1->CCR2 = 0; TIM1->CCR4 = 5000;
+//		    TIM1->CCR1 = 0; TIM1->CCR3 = 5000;
+//			TIM2->CCR3 = 0; TIM2->CCR1 = 5000;
+//			TIM2->CCR4 = 0; TIM2->CCR2 = 5000;
+//			motor_L0.target = motor_L1.target = sin_generator(&sin1);
+
+			incremental_PID(&motor_L0, &motor_pid_paramL0);
+			incremental_PID(&motor_L1, &motor_pid_paramL1);
+			incremental_PID(&motor_R0, &motor_pid_paramR0);
+			incremental_PID(&motor_R1, &motor_pid_paramR1);
+			
+			motor_set_pwm(1, (int32_t)motor_L0.output);
+			motor_set_pwm(2, (int32_t)motor_L1.output);
+			motor_set_pwm(3, (int32_t)motor_R0.output);
+	  	    motor_set_pwm(4, (int32_t)motor_R1.output);
+
+//		printf("%d,%d,%d,%d\r\n",(int)motor_L0.measure,(int)motor_L1.measure,(int)motor_R0.measure,(int)motor_R1.measure);
+//		printf("%d,%d\r\n",(int)motor_L0.measure,(int)motor_L0.target);
 //		printf("%5d  %5d %5d %5d\r\n",(int)direction[0],(int)high_time[1],(int)direction[2],(int)direction[3]);
 		vTaskDelayUntil(&xLastWakeTime, (5/portTICK_RATE_MS));//绝对休眠5ms // INCLUDE_vTaskDelayUntil 1
 	
