@@ -60,3 +60,14 @@ travel_china\main_task.o: ..\USMAT\sys.h
 travel_china\main_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 travel_china\main_task.o: ..\module\imu_task.h
 travel_china\main_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+travel_china\main_task.o: ..\application\turn.h
+travel_china\main_task.o: ..\application\sys.h
+travel_china\main_task.o: ..\application\map.h
+travel_china\main_task.o: ..\application\map_message.h
+travel_china\main_task.o: ..\application\map.h
+travel_china\main_task.o: ..\application\barrier.h
+travel_china\main_task.o: ..\module\bsp_linefollower.h
+travel_china\main_task.o: ..\application\scaner.h
+travel_china\main_task.o: ..\Math\pid.h
+travel_china\main_task.o: ..\application\speed_ctrl.h
+travel_china\main_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h

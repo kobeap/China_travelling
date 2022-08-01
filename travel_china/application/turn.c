@@ -120,11 +120,20 @@ void Turn_Angle360(void)
 	}*/
 	
 		Turn_Angle_Relative(130);//160
-		while(fabs(angle.AngleT - getAngleZ())>10);//4
+		while(fabs(angle.AngleT - getAngleZ())>10)//4
+		{
+			vTaskDelay(1);
+		}
 		Turn_Angle_Relative(130);//160
-		while(fabs(angle.AngleT - getAngleZ())>10);//4
+		while(fabs(angle.AngleT - getAngleZ())>10)//4
+		{
+			vTaskDelay(1);
+		}	
 		Turn_Angle_Relative( 120);//120
-		while(fabs(angle.AngleT - getAngleZ())>1);//4
+		while(fabs(angle.AngleT - getAngleZ())>1)//4
+		{
+			vTaskDelay(1);
+		}
 
 }
 

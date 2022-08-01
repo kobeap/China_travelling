@@ -66,3 +66,6 @@ travel_china\main.o: ..\module\imu_task.h
 travel_china\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 travel_china\main.o: ..\application\turn.h
 travel_china\main.o: ..\application\sys.h
+travel_china\main.o: ..\application\map_message.h
+travel_china\main.o: ..\application\map.h
+travel_china\main.o: ..\application\map_message.h

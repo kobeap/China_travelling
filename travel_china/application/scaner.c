@@ -12,6 +12,7 @@
 #define Speed_Compensate   5
 #define BLACK 0								//循黑线
 #define WHLITE 1							//循白线
+#define Lamp_Max 16   //循迹灯最大数
 
 const float line_weight[16] = {-3.1,-2.4,-1.8,-1.3,-0.9,-0.6,-0.4,-0.3,0.3,0.4,0.6,0.9,1.3,1.8,2.4,3.1};//0.3
 
@@ -42,19 +43,19 @@ void Go_Line(float speed){
 	motor_all.Lspeed = speed-Fspeed;
 	motor_all.Rspeed = speed+Fspeed;
 }
-
-//循迹扫描
-void Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
+void getline_error()//获得更新不同巡线模式下的误差值
 {
-	float error = 0;
+	get_detail();//获取巡线值
+	Line_Scan(&Scaner, Lamp_Max, scaner_set.EdgeIgnore);
+}
+void get_detail()
+{
 	uint32_t data = 0;
-	u8 linenum=0;
-	u8 lednum=0;
-	int8_t lednum_tmp = 0;
-	//左边的灯
+	//遇白亮灯返回0
+		//左边的灯
 	//从左往右   1 2 3 4 5 6 7 8
 	if(Line_color){
-	data = 0xFFFF;
+	data = 0xffff;//白线
 	data^=((uint16_t)HAL_GPIO_ReadPin(GPIO_Left1,GPIO_Left1_P)<<15);
 	data^=((uint16_t)HAL_GPIO_ReadPin(GPIO_Left2,GPIO_Left2_P)<<14);
 	data^=((uint16_t)HAL_GPIO_ReadPin(GPIO_Left3,GPIO_Left3_P)<<13);
@@ -75,7 +76,7 @@ void Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
 	data^=((uint16_t)HAL_GPIO_ReadPin(GPIO_Right8,GPIO_Right8_P)<<7);
 	}
 	else{
-	data = 0x0;
+	data = 0x0;//黑线
 	data|=((uint16_t)HAL_GPIO_ReadPin(GPIO_Left1,GPIO_Left1_P)<<15);
 	data|=((uint16_t)HAL_GPIO_ReadPin(GPIO_Left2,GPIO_Left2_P)<<14);
 	data|=((uint16_t)HAL_GPIO_ReadPin(GPIO_Left3,GPIO_Left3_P)<<13);
@@ -95,8 +96,17 @@ void Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
 	data|=((uint16_t)HAL_GPIO_ReadPin(GPIO_Right7,GPIO_Right7_P)<<6);
 	data|=((uint16_t)HAL_GPIO_ReadPin(GPIO_Right8,GPIO_Right8_P)<<7);
 	}
-
-	Scaner.detail = data;							//获得二进制巡线值
+	Scaner.detail = data;
+}
+//循迹扫描
+void Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
+{
+	float error = 0;
+	uint32_t data = 0;
+	u8 linenum=0;
+	u8 lednum=0;
+	int8_t lednum_tmp = 0;
+							//获得二进制巡线值
 	for(uint8_t i=0;i<sensorNum;i++) 		//从小车方向从左往右数亮灯数和引导线数
 	{								//linenum用来记录有多少条线，line用来记录第几条线。
 		if((scaner->detail&(0x1<<i))) 
@@ -108,14 +118,19 @@ void Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
 	}
 	scaner->lineNum = linenum;			
 	scaner->ledNum=lednum;
+////		for (uint8_t i=0; i<sensorNum; i++)
+////		{
+////			lednum_tmp += (scaner->detail>>(sensorNum-i-1))&0X01;//记录点灯数
+////			error += ((scaner->detail>>(sensorNum-i-1))&0X01) * line_weight[i];
+////		}
 	if ((nodesr.nowNode.flag & LEFT_LINE) == LEFT_LINE)  //左循线    
 	{
 		for (uint8_t i=0; i<sensorNum; i++)
 		{
-			lednum_tmp += (scaner->detail>>(sensorNum-i))&0X01;//记录点灯数
-			error += ((scaner->detail>>(sensorNum-i))&0X01) * line_weight[i];
-			if ((scaner->detail>>(sensorNum-i)) & 0X01)		//如果是白线
-				if (!((scaner->detail>>((sensorNum-i)+1))&0x01))		//下一个灯不是白
+			lednum_tmp += (scaner->detail>>(sensorNum-i-1))&0X01;//记录点灯数
+			error += ((scaner->detail>>(sensorNum-i-1))&0X01) * line_weight[i];
+			if ((scaner->detail>>(sensorNum-i-1)) & 0X01)		//如果是白线
+				if (!((scaner->detail>>((sensorNum-i-2)))&0x01))		//下一个灯不是白
 					break;		//退出
 		}
 	}
@@ -124,26 +139,31 @@ void Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
 		for (uint8_t i=0; i<sensorNum; i++)
 		{
 			lednum_tmp += (scaner->detail>>i)&0X01;
-			error += ((scaner->detail>>i)&0X01) * line_weight[sensorNum-i];
+			error += ((scaner->detail>>i)&0X01) * line_weight[sensorNum-i-1];
 			if ((scaner->detail>>i) & 0X01)
-				if (!((scaner->detail>>(i-1))&0x01))
+				if (!((scaner->detail>>(i+1))&0x01))
 					break;
 		}
 	}
-	else
+	else//后面再完善
 	{
-		if (lednum <= 7)  ////防止过多的灯带来的干扰
+		for (uint8_t i=0; i<sensorNum; i++)//无任何处理的巡线
 		{
-				if(lednum >= 4)     //四个灯以上
-					edge_ignore = 3;	//忽略边缘三个灯
-				for(uint8_t i=edge_ignore; i<sensorNum-edge_ignore; i++) 
-				{
-					lednum_tmp += (scaner->detail>>i)&0X01;
-					error += ((scaner->detail>>i)&0X01) * line_weight[i];
-				}	
+			lednum_tmp += (scaner->detail>>(sensorNum-i-1))&0X01;//记录点灯数
+			error += ((scaner->detail>>(sensorNum-i-1))&0X01) * line_weight[i];
 		}
-		else     //灯太多给俺滚
-			return;
+//		if (lednum <= 7)  ////防止过多的灯带来的干扰
+//		{
+//				if(lednum >= 4)     //四个灯以上
+//					edge_ignore = 3;	//忽略边缘三个灯
+//				for(uint8_t i=edge_ignore; i<sensorNum-edge_ignore; i++) 
+//				{
+//					lednum_tmp += (scaner->detail>>i)&0X01;
+//					error += ((scaner->detail>>i)&0X01) * line_weight[sensorNum-i-1];
+//				}	
+//		}
+//		else     //灯太多给俺滚
+//			return;
 	}
 	
 	if(lednum==0)

@@ -8,6 +8,7 @@
 #include "scaner.h"
 #include "bsp_linefollower.h"
 #include "sin_generate.h"
+#include "bsp_buzzer.h"
 TaskHandle_t motor_handler;
 int dirct[4] = {-1,-1,1,1};  
 volatile uint8_t PIDMode;
@@ -17,7 +18,7 @@ uint8_t line_gyro_switch = 0;
 #define Speed_Bias_Up 10
 #define Speed_Bias_Down 10
 
-
+int motor1;
 void motor_task(void *pvParameters){
 	portTickType xLastWakeTime;
 	xLastWakeTime = xTaskGetTickCount();   //获取系统节拍
@@ -25,8 +26,37 @@ void motor_task(void *pvParameters){
 
 	while(1){
 			get_motor_speed();
-		
-     		runWithAngle(0,300);
+		    motor_all.encoder_avg = (float)((float)(pulse_num[0]*dirct[0] + pulse_out[0]*MAX_pulse*dirct[0]) + (float)(pulse_num[1]*dirct[1] + pulse_out[1]*MAX_pulse*dirct[1]) + (float)(pulse_num[2]*dirct[2] + pulse_out[2]*MAX_pulse*dirct[2]) + (float)(pulse_num[3]*dirct[3] + pulse_out[3]*MAX_pulse*dirct[3])) / 4.0f;
+			//轮径7.2cm
+//			printf("num=%d,out=%d\r\n",pulse_num[0],pulse_out[0]);
+//			printf("%f\r\n",motor_all.encoder_avg);
+			motor_all.Distance =6.7*((motor_all.encoder_avg * 7.2f * PI)/(572*4));//转换为1米
+//		printf("distance=%f\r\n",motor_all.Distance);
+				if(motor_all.Distance<100)
+		{
+			runWithAngle(0,300);
+			printf("distance=%f\r\n",motor_all.Distance);
+		}
+		else{
+			runWithAngle(0,0);
+		}
+			 //转弯PID控制
+				if (PIDMode == is_Turn)	
+				{
+					if (Turn_Angle(angle.AngleT))
+					{
+						gyroT_pid = (struct P_pid_obj){0,0,0,0,0,0};//清空输出
+					}
+				}
+			//自平衡PID控制
+				if (PIDMode == is_Gyro)
+				{ 
+					gradual_cal(&TG_speed, motor_all.Gspeed, motor_all.Gincrement);	
+					runWithAngle(angle.AngleG, TG_speed.Now);
+				}
+				else
+					motor_all.Gspeed = 0;
+//    		runWithAngle(0,300);	
 			motor_L0.target = motor_L1.target = motor_all.Lspeed;
 			motor_R0.target = motor_R1.target = motor_all.Rspeed;
 			mouse++;
@@ -35,9 +65,9 @@ void motor_task(void *pvParameters){
 //						LED_twinkle();
 				HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_1);
 			}
-//			TIM1->CCR2 = 0; TIM1->CCR4 = 5000;
+//			TIM1->CCR4 = 0; TIM1->CCR2 = 5000;
 //		    TIM1->CCR1 = 0; TIM1->CCR3 = 5000;
-//			TIM2->CCR3 = 0; TIM2->CCR1 = 5000;
+//			TIM2->CCR1 = 0; TIM2->CCR3 = 5000;
 //			TIM2->CCR4 = 0; TIM2->CCR2 = 5000;
 //			motor_L0.target = motor_L1.target = sin_generator(&sin1);
 

@@ -19,8 +19,8 @@
 #include "motion.h"
 #include "bsp_linefollower.h"
 
-#define Up_pitch -15
-#define Down_pitch 10
+#define Up_pitch   10
+#define Down_pitch -15
 #define BACK_SPEED  -30
 #define BACK_SPEED1 -10
 #define GOSPEED 10
@@ -268,42 +268,50 @@ void Stage_P2()		//flag==1时取绝度角度，flag==0时取相对角度
 void Barrier_Bridge(float step,float speed)	//过长桥
 {
 	float num = 0;
-	
-	motor_all.Cspeed = 80;    //原来80   90
-	pid_mode_switch(is_Line);
-	while(imu.pitch > Up_pitch);	//还在平地	
+//	motor_all.Cspeed = 80;    //原来80   90
+//	pid_mode_switch(is_Line);
+//	while(imu.pitch <Up_pitch)//还在平地
+//	{
+//		vTaskDelay(5);
+//	}	
 	//is_Up = true;
-	motor_all.Gspeed = 90;    //90 
-	angle.AngleG = nodesr.nowNode.angle;
+	motor_all.Gspeed = 800;    //自平衡速度
+	angle.AngleG = nodesr.nowNode.angle;//自平衡走的角度
 	pid_mode_switch(is_Gyro);
 	
 	struct PID_param origin_param = gyroG_pid_param;
 	gyroG_pid_param.kp = 1.7;
 	
-	while(imu.pitch <= Up_pitch);	//上桥
+	while(imu.pitch <= Up_pitch)	//还在平地,出循环就是上桥中
+	{
+		vTaskDelay(5);
+	}
 	//is_Up = false;
 
-	//motor_all.Gspeed = 110;   //原来65   90
+	motor_all.Gspeed = 800;   //原来65   90
 	num = motor_all.Distance;
-	while(imu.pitch < Down_pitch)          
+	while(imu.pitch > Down_pitch)          
 	{
-		if (infrared.inside_left == 1||infrared.outside_left == 1)
-			angle.AngleG = nodesr.nowNode.angle - 8; 
-		else if (infrared.inside_right == 1||infrared.outside_right == 1)
-			angle.AngleG = nodesr.nowNode.angle + 8; 
+		infrared_open();
+		buzzer_on();
+		if (infrared.inside_left == 1||infrared.outside_right==0)
+			angle.AngleG = getAngleZ() + 3; 
+		else if (infrared.inside_right == 1||infrared.outside_left==0)
+			angle.AngleG = getAngleZ() - 3; 
 		else
-			angle.AngleG = nodesr.nowNode.angle;
+			angle.AngleG = getAngleZ();//正确的角度
 		
 		if (motor_all.Distance-num < 85)
-			motor_all.Gspeed = 90;     //原来是80  90
+			motor_all.Gspeed = 800;     //原来是80  90
 		else
-			motor_all.Gspeed = 60;      //原来是65   75
+			motor_all.Gspeed = 800;      //原来是65   75
+		vTaskDelay(5);
 	}
-	angle.AngleG = nodesr.nowNode.angle;
-	delay_ms(500);
-	motor_all.Cspeed = 80;
-	pid_mode_switch(is_Line);
-	nodesr.nowNode.function = 0;
+//	angle.AngleG = nodesr.nowNode.angle;
+//	delay_ms(500);
+//	motor_all.Cspeed = 80;
+//	pid_mode_switch(is_Line);
+//	nodesr.nowNode.function = 0;
 	nodesr.flag |= 0X04;  //到达路口
 }
 
@@ -342,33 +350,31 @@ void Sword_Mountain()
 	
 	line_pid_param.kp = 50;
 	
-	motor_all.Cspeed = 20;   //原来30
+	motor_all.Cspeed = 200;   //原来30
 	
 	//mpuZreset(imu.yaw, nodesr.nowNode.angle);  //陀螺仪校正
-	while(motor_all.Distance - num < 50);
+//	while(motor_all.Distance - num < 50);
 	angle.AngleG = getAngleZ();
 	
 	gyroG_pid_param.kp = 1.4;   //拉大刀山的自平衡kp
-	motor_all.Gspeed = 20;
+	motor_all.Gspeed = 200;
 	pid_mode_switch(is_Gyro);
 
-	while(imu.pitch > -2);
+	while(imu.pitch < 3+basic_p)//出循环上刀山
+	{
+		vTaskDelay(5);
+	}
 	buzzer_on();
 	
-	//motor_all.Gspeed = 20;  //30
-	
-//	motor_all.Lspeed = 24;
-//	motor_all.Rspeed = 20;
-//	pid_mode_switch(is_No);
-	
-	//angle.AngleG = 0;      //此处不知道如何应用
-	//pid_mode_switch(is_Gyro);
-	while(imu.pitch < 2);
+
+	while(imu.pitch > basic_p-3)//出循环下刀山
+	{
+		vTaskDelay(5);
+	}
 	gyroG_pid_param = origin_param1;
 	line_pid_param = origin_param;
 	buzzer_off();
 	
-	//while(Scaner.ledNum==0);
 	 
 	nodesr.nowNode.function=0;//清除障碍标志
 	nodesr.flag|=0x04;	//到达路口

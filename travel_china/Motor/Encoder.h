@@ -2,20 +2,25 @@
 #define __Encoder_h__
 #include "main.h"
 #include "tim.h"
-#define FORWARD 1
+#define FORWARD  1
 #define BACKWARD -1
+
 //定义小车轮子对应的输入捕获定时器
 typedef struct{
 	TIM_HandleTypeDef TIM;
 	GPIO_TypeDef* GPIO_2;//B相
-  uint32_t GPIO_PORT_2;		
+  uint32_t GPIO_PORT_2;
+  uint32_t channelA;	
+  __IO uint32_t CCR_CHAN;
 }wheel;
 extern wheel wheel_1,wheel_2,wheel_3,wheel_4;
 /*
 wheel_1     wheel_2
 wheel_3     wheel_4
 */
+#define MAX_pulse   3000
 extern int pulse_num[4];
+extern int pulse_out[4];  
 extern uint32_t high_time[4];        			//高电平时间
 extern int  direction[4];                //正反转识别
 void Encoder_init(void); 

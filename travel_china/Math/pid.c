@@ -29,7 +29,7 @@ void incremental_PID (struct I_pid_obj *motor, struct PID_param *pid)
 	if (motor->output > pid->outputMax || motor->measure > pid->actualMax)
 	{
 		if (motor->bias < 0)
-			integral = motor->bias;
+			integral = motor->bias;	
 	}
 	else if (motor->output < -pid->outputMax || motor->measure < -pid->actualMax)
 	{
@@ -93,14 +93,14 @@ void pid_init(void)
 	motor_pid_paramL0.ki = 4;//42.0
 	motor_pid_paramL0.kd = 0;//25
 	motor_pid_paramL0.differential_filterK = 0.5;
-	motor_pid_paramL0.actualMax = 200;
+	motor_pid_paramL0.actualMax = 1500;
 	
 	motor_pid_paramL1.outputMax = MOTOR_PWM_MAX + 100;
 	motor_pid_paramL1.kp = 50;//55
 	motor_pid_paramL1.ki = 4;//42.0
 	motor_pid_paramL1.kd = 0;//25
 	motor_pid_paramL1.differential_filterK = 0.5;
-	motor_pid_paramL1.actualMax = 200;
+	motor_pid_paramL1.actualMax = 1500;
 	
 	
 	motor_pid_paramR0.outputMax = MOTOR_PWM_MAX + 100;
@@ -108,7 +108,7 @@ void pid_init(void)
 	motor_pid_paramR0.ki = 4;//42.0
 	motor_pid_paramR0.kd = 0;//25
 	motor_pid_paramR0.differential_filterK = 0.5;
-	motor_pid_paramR0.actualMax = 200;
+	motor_pid_paramR0.actualMax = 1500;
 	
 	
 	motor_pid_paramR1.outputMax = MOTOR_PWM_MAX + 100;
@@ -116,23 +116,23 @@ void pid_init(void)
 	motor_pid_paramR1.ki = 4;//42.0
 	motor_pid_paramR1.kd = 0;//25
 	motor_pid_paramR1.differential_filterK = 0.5;
-	motor_pid_paramR1.actualMax = 200;
+	motor_pid_paramR1.actualMax = 1500;
 	
 	line_pid_param.kp = 12;
 	line_pid_param.ki = 0.003;
 	line_pid_param.kd = 0.0;//0.0
 	line_pid_param.differential_filterK = 0.5;
-	line_pid_param.outputMax = 50;
-	line_pid_param.outputMin = -50;
+	line_pid_param.outputMax = 500;
+	line_pid_param.outputMin = -500;
 	
-	gyroT_pid_param.kp = 50.0;//1.0
+	gyroT_pid_param.kp = 100.0;//1.0
 	gyroT_pid_param.ki = 0.004;//0.004
 	gyroT_pid_param.kd = 0.5;//0.5
 	gyroT_pid_param.differential_filterK = 1;
-	gyroT_pid_param.outputMax = 80;
-	gyroT_pid_param.outputMin = -80;
+	gyroT_pid_param.outputMax = 1500;
+	gyroT_pid_param.outputMin = -1500;
 	
-	gyroG_pid_param.kp = 1.2;  //原来1.2
+	gyroG_pid_param.kp = 2.0;  //原来1.2
 	gyroG_pid_param.ki = 0.004;
 	gyroG_pid_param.kd = 0.5;
 	gyroG_pid_param.differential_filterK = 0.5;

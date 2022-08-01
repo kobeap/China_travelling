@@ -36,6 +36,6 @@ void LFB_receive_init(void);
 void line_measure(void);
 //向地址为1的循迹板发送查询指令
 void LFB_send(void);
-
+void infrared_open(void);
 #endif
 

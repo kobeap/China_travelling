@@ -56,11 +56,10 @@ void user_init(void){
 	{
 		delay_ms(20);
 		mpuZ_reset_val += imu.yaw;   
-		imu.compensatePitch += imu.pitch;
 	}
 	mpuZ_reset_val /= 10;   // 这是当前的0°角
 	mpuZreset(mpuZ_reset_val, 0);//把此时角度变为0度
-	imu.compensatePitch /= 10;//
+
 }
 
 

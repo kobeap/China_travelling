@@ -19,7 +19,7 @@ struct Motors
 	float GyroT_speedMax;	//转弯最大速度
 	float GyroG_speedMax;	//自平衡最大速度
 	
-	int encoder_avg;	//编码器读数 
+	float encoder_avg;	//编码器读数 
 	float Distance;		//路程
 	
 	float Cincrement;	//循迹加速度

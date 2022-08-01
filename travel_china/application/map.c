@@ -21,7 +21,7 @@ struct Map_State map = {0,0};
 //u8 route[100] = {N9,B9,N7,P5,N7,0XFF};
 
 u8 route [100] = {B1,N1,P1,N1,B2,N4,N5,N6,P4,N6,N5,N4,N3,P3,N3,N10,0XFF};    //走门路线
-
+u8 route_test[10]={B1,N1,P1,0xff};
 //u8 route[100] = {P7,N20,C4,C8,C7,N14,C3,N9,B9,N7,P5,N7,0XFF};   //qqb
 
 //u8 route[100] = {B9,N7,0XFF};
@@ -65,7 +65,7 @@ void mapInit()
 	nodesr.nowNode.nodenum = N2;		//起始点   //N2
 	nodesr.nowNode.angle = 0;		//起始角度   //0
 	nodesr.nowNode.function = 1;	//起始函数   //1
-	nodesr.nowNode.speed = 80;//60             //80
+	nodesr.nowNode.speed = 300;//60             //80
 	nodesr.nowNode.step= 20;//30               //20
 	nodesr.nowNode.flag = CLEFT|RIGHT_LINE;    //CLEFT|RIGHT_LINE
 //	for(i=0;i<107;i++)				//把地图长度信息的厘米转化成编码器数

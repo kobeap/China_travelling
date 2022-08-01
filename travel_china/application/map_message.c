@@ -20,7 +20,7 @@ NODE Node[118]={
 	
 /*P2 	 5*/	{N2,/*CLEFT|DLEFT*/CLEFT|RIGHT_LINE,0,20,90,1},	// step 10		
 
-/*S2   6*/	{N6,CLEFT,30,60,100,1},			
+/*S2   6*/	    {N6,CLEFT,30,60,100,1},			
 
 /*P3	 7*/	{N3,DRIGHT|CRIGHT|STOPTURN,180,285,130,1},				//Ô­À´ÊÇ130
 

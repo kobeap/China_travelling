@@ -35,6 +35,7 @@
 #include "imu_task.h"
 #include "turn.h"
 #include "delay.h"
+#include "map_message.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -106,12 +107,12 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   MX_USART6_UART_Init();
+
+  /* USER CODE BEGIN 2 */
   Timer5_Init();
   delay_init();
   user_init();
-  /* USER CODE BEGIN 2 */
 
-	
    HAL_TIM_PWM_Start_IT(&htim2,TIM_CHANNEL_1);
    HAL_TIM_PWM_Start_IT(&htim2,TIM_CHANNEL_2);
     HAL_TIM_PWM_Start_IT(&htim2,TIM_CHANNEL_3);

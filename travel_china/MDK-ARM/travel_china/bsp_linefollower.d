@@ -41,3 +41,12 @@ travel_china\bsp_linefollower.o: ..\application\scaner.h
 travel_china\bsp_linefollower.o: ..\application\sys.h
 travel_china\bsp_linefollower.o: ..\Math\pid.h
 travel_china\bsp_linefollower.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+travel_china\bsp_linefollower.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+travel_china\bsp_linefollower.o: ../Core/Inc/FreeRTOSConfig.h
+travel_china\bsp_linefollower.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+travel_china\bsp_linefollower.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+travel_china\bsp_linefollower.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+travel_china\bsp_linefollower.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM7/r0p1/portmacro.h
+travel_china\bsp_linefollower.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+travel_china\bsp_linefollower.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+travel_china\bsp_linefollower.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
