@@ -55,12 +55,10 @@ void user_init(void){
 	for (uint8_t i = 0; i<10; i++)
 	{
 		delay_ms(20);
-		mpuZ_reset_val += imu.yaw;   
+		mpuZ_reset_val += imu.yaw;  
 	}
 	mpuZ_reset_val /= 10;   // 这是当前的0°角
 	mpuZreset(mpuZ_reset_val, 0);//把此时角度变为0度
-
 }
-
 
 

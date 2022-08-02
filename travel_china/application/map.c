@@ -11,7 +11,7 @@
 #include "bsp_linefollower.h"
 #include "math.h"
 #include "bsp_buzzer.h"
-
+#include "motor_task.h"
 struct Map_State map = {0,0};
 
 //u8 route[100] = {C8, C4, N20, P7, N20, 0XFF};
@@ -20,8 +20,8 @@ struct Map_State map = {0,0};
 
 //u8 route[100] = {N9,B9,N7,P5,N7,0XFF};
 
-u8 route [100] = {B1,N1,P1,N1,B2,N4,N5,N6,P4,N6,N5,N4,N3,P3,N3,N10,0XFF};    //走门路线
-u8 route_test[10]={B1,N1,P1,0xff};
+//u8 route [100] = {B1,N1,P1,N1,B2,N4,N5,N6,P4,N6,N5,N4,N3,P3,N3,N10,0XFF};    //走门路线
+u8 route[100]={B1,N1,P1,0xff};
 //u8 route[100] = {P7,N20,C4,C8,C7,N14,C3,N9,B9,N7,P5,N7,0XFF};   //qqb
 
 //u8 route[100] = {B9,N7,0XFF};
@@ -61,19 +61,19 @@ NODESR nodesr;	//运作中间变量
 //地图初始化
 void mapInit()
 {
-	u8 i=0;
+//	u8 i=0;
 	nodesr.nowNode.nodenum = N2;		//起始点   //N2
 	nodesr.nowNode.angle = 0;		//起始角度   //0
 	nodesr.nowNode.function = 1;	//起始函数   //1
 	nodesr.nowNode.speed = 300;//60             //80
-	nodesr.nowNode.step= 20;//30               //20
+	nodesr.nowNode.step= 50;//30               //20
 	nodesr.nowNode.flag = CLEFT|RIGHT_LINE;    //CLEFT|RIGHT_LINE
 //	for(i=0;i<107;i++)				//把地图长度信息的厘米转化成编码器数
 //		Node[i].step*=58.22;
 //	for(i=0;i<107;i++)				//把地图长度信息的厘米转化成编码器数
 //		Node[i].flag|=STOPTURN;
-	for(i=0;i<118;i++)			//全地图速度调整
-		Node[i].speed*=1.8;	
+//	for(i=0;i<118;i++)			//全地图速度调整
+//		Node[i].speed*=1.8;	
 }
 
 
@@ -136,7 +136,7 @@ u8 deal_arrive()
 	if ((nodesr.nowNode.flag & CLEFT) == CLEFT)//左分岔路
 	{
 		//左边数起第二、第三个灯任意一个亮即可
-		 if( (Scaner.ledNum>=4&&Scaner.ledNum<=7) && (Scaner.detail&0x0006) )
+		 if( (Scaner.ledNum>=4&&Scaner.ledNum<=7) && ((Scaner.detail&0x1000)|(Scaner.detail&0x2000)) )
 		{
 			return 1;
 		}
@@ -218,8 +218,9 @@ void Cross()
 	}
 	if(_flag==1)//循迹
 	{
+		pid_mode_switch(is_Line);
 		
-		if(fabsf(motor_all.Distance) >= 0.7*nodesr.nowNode.step) //距离大于0.7
+		if(fabsf(motor_all.Distance) >= 0.7*nodesr.nowNode.step) //距离大于0.7就不循迹了
 		{
 			_flag=0;
 			
@@ -267,6 +268,7 @@ void Cross()
 			motor_all.Cincrement = 2.5;	//默认加速度  原来是1.5
 			motor_all.Cspeed=nodesr.nowNode.speed;// 0.8原来是
 		}
+		
 	}
 	else if(_flag==0)//路径超过0.7  判断路口
 	{
@@ -311,43 +313,49 @@ void Cross()
 					num = motor_all.Distance;
 					if(nodesr.nowNode.nodenum == N22 || nodesr.nowNode.nodenum == C6 )   //C9点位我也做了判断
 					{
-						while(motor_all.Distance-num < 6);  //原来是16
+						while(motor_all.Distance-num < 6)  //原来是16
+						{
+							vTaskDelay(2);
+						}
 					}
-					else if(nodesr.nowNode.nodenum == C9)
-					{
-						while(motor_all.Distance-num < 3);
-					}
-					else if(nodesr.nextNode.nodenum == B6)
-					{
-						while(motor_all.Distance-num < 12);
-					}
-					else if(nodesr.nowNode.nodenum == N8)
-					{
-						while(motor_all.Distance-num < 8); 
-					}
-					else if(nodesr.nextNode.nodenum == N4)
-					{
-						while(motor_all.Distance-num < 27); 
-					}
-					else if(nodesr.nowNode.nodenum == N3)
-					{
-						while(motor_all.Distance-num < 5); 
-					}
-					else if(nodesr.nowNode.nodenum == C1)
-					{
-						while(motor_all.Distance-num < 22);
-					}
-					else if(nodesr.nowNode.nodenum == N12)
-					{
-						while(motor_all.Distance-num < 9);
-					}
-					else
-					{
-						while(motor_all.Distance-num<5);	//步长延时，用于等待车中中心到达路口,原来是15
-					}
+//					else if(nodesr.nowNode.nodenum == C9)
+//					{
+//						while(motor_all.Distance-num < 3);
+//					}
+//					else if(nodesr.nextNode.nodenum == B6)
+//					{
+//						while(motor_all.Distance-num < 12);
+//					}
+//					else if(nodesr.nowNode.nodenum == N8)
+//					{
+//						while(motor_all.Distance-num < 8); 
+//					}
+//					else if(nodesr.nextNode.nodenum == N4)
+//					{
+//						while(motor_all.Distance-num < 27); 
+//					}
+//					else if(nodesr.nowNode.nodenum == N3)
+//					{
+//						while(motor_all.Distance-num < 5); 
+//					}
+//					else if(nodesr.nowNode.nodenum == C1)
+//					{
+//						while(motor_all.Distance-num < 22);
+//					}
+//					else if(nodesr.nowNode.nodenum == N12)
+//					{
+//						while(motor_all.Distance-num < 9);
+//					}
+//					else
+//					{
+//						while(motor_all.Distance-num<5);	//步长延时，用于等待车中中心到达路口,原来是15
+//					}
 					angle.AngleT = nodesr.nextNode.angle;  //转绝对角度
 					pid_mode_switch(is_Turn);	
-					while(fabs(nodesr.nextNode.angle-getAngleZ())>2);
+					while(fabs(nodesr.nextNode.angle-getAngleZ())>2)
+					{
+						vTaskDelay(2);
+					}
 					CarBrake();
 					delay_ms(20);
 					motor_pid_clear();
@@ -376,16 +384,23 @@ void Cross()
 							turn=need2turn(getAngleZ(),nodesr.nextNode.angle);
 							turnspeed=84*(180-fabs(need2turn(getAngleZ(),nodesr.nextNode.angle)))/360;
 							AdCircle(turnspeed,turn/1.4);
+							vTaskDelay(2);
 						}
 						_flag=1;	
 					}			
 					else
 					{
 						num=motor_all.Distance;
-						while(motor_all.Distance-num<15);
+						while(motor_all.Distance-num<15)
+						{
+							vTaskDelay(2);
+						}
 						angle.AngleT = nodesr.nextNode.angle;  //转绝对角度
 						pid_mode_switch(is_Turn);	
-						while(fabs(nodesr.nextNode.angle-getAngleZ())>2);						
+						while(fabs(nodesr.nextNode.angle-getAngleZ())>2)
+						{
+							vTaskDelay(2);
+						}							
 						_flag=1;		
 					}
 				}

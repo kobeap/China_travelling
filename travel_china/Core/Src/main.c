@@ -112,7 +112,9 @@ int main(void)
   Timer5_Init();
   delay_init();
   user_init();
-
+//  nodesr.nowNode.flag = CLEFT|RIGHT_LINE;    //CLEFT|RIGHT_LINE
+//  nodesr.nowNode.angle = 0;		//ÆðÊ¼½Ç¶È   //0
+  mapInit();
    HAL_TIM_PWM_Start_IT(&htim2,TIM_CHANNEL_1);
    HAL_TIM_PWM_Start_IT(&htim2,TIM_CHANNEL_2);
     HAL_TIM_PWM_Start_IT(&htim2,TIM_CHANNEL_3);
@@ -124,7 +126,7 @@ int main(void)
    HAL_TIM_PWM_Start_IT(&htim1,TIM_CHANNEL_3);
    HAL_TIM_PWM_Start_IT(&htim1,TIM_CHANNEL_4);
    Start_task_create();
-   
+  
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

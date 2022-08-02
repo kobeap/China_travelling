@@ -16,8 +16,22 @@ void main_task(void *pvParameters){
 //		getline_error();
 //		Go_Line(500);
 //        vTaskDelay(5);
-	
-		vTaskDelay(5);
+		if(i==0)
+		{
+			runWithAngle(0,300);
+			while(imu.pitch>0)
+			{
+				vTaskDelay(2);
+			}//ฯยวล
+			while(imu.pitch<-8)
+			{
+				vTaskDelay(2);
+			}
+		}
+		i=1;
+	    Cross();	
+		vTaskDelay(2);
+//		vTaskDelay(5);
 //		Barrier_Bridge(0,0);
 //    	Sword_Mountain();
 //		printf("pitch=%f\r\n",imu.pitch);

@@ -2,7 +2,7 @@
 #define __BARRIER_H
 
 #include "sys.h"
-#define basic_p -6
+
 void Stage(void);
 void Barrier_Bridge(float step,float speed);
 void Barrier_Hill(uint8_t order) ;
