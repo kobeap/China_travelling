@@ -1,9 +1,7 @@
 #include "task_create.h"
 TaskHandle_t Start_handler; //定义开始任务句柄
-TaskHandle_t PWM_TASK_handler; //定义PWM任务句柄
 TaskHandle_t main_handler; //定义主控任务句柄
-//TaskHandle_t motor_handler; //定义PID任务句柄
-//TaskHandle_t track_handler; //定义循迹板任务句柄
+
 /*
 开始任务创建函数
 */
@@ -26,21 +24,3 @@ void main_task_create(void){
 								 (UBaseType_t) main_task_priority, //任务的优先级
 								(TaskHandle_t *)&main_handler ); //任务句柄
 }
-////循迹板任务创建
-//void track_task_create(void){
-//	  xTaskCreate((TaskFunction_t ) track_task,//任务函数
-//	               (const char *)"track_task",	  //任务名字
-//								 (uint32_t) track_size,    //任务堆栈大小
-//								 (void* )NULL,                  //传递给任务参数的指针参数
-//								 (UBaseType_t) track_task_priority, //任务的优先级
-//								(TaskHandle_t *)&track_handler ); //任务句柄
-//							 }
-////PID任务创建
-//void motor_task_create(void){
-//	  xTaskCreate((TaskFunction_t ) motor_task,//任务函数
-//	               (const char *)"motor_task",	  //任务名字
-//								 (uint32_t) motor_size,    //任务堆栈大小
-//								 (void* )NULL,                  //传递给任务参数的指针参数
-//								 (UBaseType_t) motor_task_priority, //任务的优先级
-//								(TaskHandle_t *)&motor_handler ); //任务句柄
-//							 }

@@ -40,3 +40,6 @@ travel_china\encoder.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 travel_china\encoder.o: ..\USMAT\uart.h
 travel_china\encoder.o: ..\USMAT\sys.h
 travel_china\encoder.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+travel_china\encoder.o: ..\application\speed_ctrl.h
+travel_china\encoder.o: ..\application\sys.h
+travel_china\encoder.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h

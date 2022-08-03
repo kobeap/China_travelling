@@ -13,7 +13,6 @@
 volatile struct Infrared_Sensor infrared;
 
 void show_line(SCANER *gray);
-
 void infrared_open()
 {
 	//ÄÚ×ó
@@ -32,14 +31,6 @@ void infrared_open()
 		else{
 			infrared.inside_right=0;
 		}
-//		if(HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_9))
-//		{
-//			
-//		}
-//		else{
-//			
-//		}
-//	
 		//ÍâÓÒ
 		if(HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_9))
 		{
@@ -54,10 +45,6 @@ void infrared_open()
 		}else{
 			infrared.outside_left=0;
 		}
-//		if(HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_10))
-//		{
-//			printf("ok6");
-//		}
 }
 
 

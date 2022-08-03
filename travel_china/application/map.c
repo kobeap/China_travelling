@@ -12,6 +12,7 @@
 #include "math.h"
 #include "bsp_buzzer.h"
 #include "motor_task.h"
+#include "encoder.h"
 struct Map_State map = {0,0};
 
 //u8 route[100] = {C8, C4, N20, P7, N20, 0XFF};
@@ -21,7 +22,7 @@ struct Map_State map = {0,0};
 //u8 route[100] = {N9,B9,N7,P5,N7,0XFF};
 
 //u8 route [100] = {B1,N1,P1,N1,B2,N4,N5,N6,P4,N6,N5,N4,N3,P3,N3,N10,0XFF};    //走门路线
-u8 route[100]={B1,N1,P1,0xff};
+u8 route[100]={B1,N1,P1,N1,0xff};
 //u8 route[100] = {P7,N20,C4,C8,C7,N14,C3,N9,B9,N7,P5,N7,0XFF};   //qqb
 
 //u8 route[100] = {B9,N7,0XFF};
@@ -137,7 +138,7 @@ u8 deal_arrive()
 	{
 		//左边数起第二、第三个灯任意一个亮即可
 		 if( (Scaner.ledNum>=4&&Scaner.ledNum<=7) && ((Scaner.detail&0x1000)|(Scaner.detail&0x2000)) )
-		{
+		 {
 			return 1;
 		}
 	}
@@ -244,18 +245,18 @@ void Cross()
 			if( (fabs(need2turn(getAngleZ(),nodesr.nextNode.angle))<=10) || (fabs(need2turn(nodesr.nowNode.angle,nodesr.nextNode.angle))<=10))
 			{													 		
 				motor_all.Cincrement = 2;	  //原来是1
-				motor_all.Cspeed = 0.8*nodesr.nowNode.speed;	
+				motor_all.Cspeed = nodesr.nowNode.speed;	
 			 }
 			else
 			{
 				motor_all.Cincrement = 2.5;	//默认加速度 原来是1.5
 				if ((nodesr.nowNode.flag & SLOWDOWN) == SLOWDOWN)
 				{
-					motor_all.Cspeed = 30;
+					motor_all.Cspeed = 200;
 				}
 				if(0.5*nodesr.nowNode.speed>40)
 				{
-					motor_all.Cspeed=80;// 原来 40 
+					motor_all.Cspeed=300;// 原来 40 
 				}
 				else
 				{
@@ -411,8 +412,7 @@ void Cross()
 			nodesr.nextNode	= Node[getNextConnectNode(nodesr.nowNode.nodenum,route[map.point++])];//获取下一结点	
 			
 			//路程记录清零
-			motor_all.Distance = 0;
-			motor_all.encoder_avg = 0;
+		     encoder_clear();
 		} 
 		else//如果路线走完
 		{		

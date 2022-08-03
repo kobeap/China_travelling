@@ -7,8 +7,8 @@
 #define LFB_HALF_SENSOR_NUM 8
 
 //向前的红外
-#define Infrared_ahead  (uint8_t)!PBin(2)
-#define Infrared_FrontLeft  (uint8_t)!PAin(12)
+#define Infrared_ahead  (uint8_t)!HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_8)
+
 
 struct Line_Grays
 {
@@ -37,5 +37,6 @@ void line_measure(void);
 //向地址为1的循迹板发送查询指令
 void LFB_send(void);
 void infrared_open(void);
+void infrared_hopen(void);
 #endif
 

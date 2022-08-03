@@ -102,7 +102,6 @@ void get_detail()
 void Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
 {
 	float error = 0;
-	uint32_t data = 0;
 	u8 linenum=0;
 	u8 lednum=0;
 	int8_t lednum_tmp = 0;

@@ -31,9 +31,9 @@ void motor_task(void *pvParameters){
 //			printf("num=%d,out=%d\r\n",pulse_num[0],pulse_out[0]);
 //			printf("%f\r\n",motor_all.encoder_avg);
 			motor_all.Distance =((motor_all.encoder_avg * 6.8f * PI)/(572.0f));//转换为1米
-//		printf("distance=%f\r\n",motor_all.Distance);
-
-			
+//            printf("pid=%d\r\n",PIDMode);//
+		
+//			printf("%f\r\n",imu.pitch);
 		//陀螺仪自平衡->循迹
 			if (line_gyro_switch == 1)    //这里的line_gyro_switch是在PIDMODE切换情况下所产生的标志位
 			{
@@ -99,13 +99,18 @@ void motor_task(void *pvParameters){
 			incremental_PID(&motor_R0, &motor_pid_paramR0);
 			incremental_PID(&motor_R1, &motor_pid_paramR1);
 			
+			
+//			TIM1->CCR2 = 0; TIM1->CCR4 = 5000;
+//			TIM1->CCR1 = 0; TIM1->CCR3 = 5000;
+//			TIM2->CCR2 = 0; TIM2->CCR4 = 5000;
+//			TIM2->CCR3 = 0; TIM2->CCR1 = 5000;
 			motor_set_pwm(1, (int32_t)motor_L0.output);
 			motor_set_pwm(2, (int32_t)motor_L1.output);
 			motor_set_pwm(3, (int32_t)motor_R0.output);
 	  	    motor_set_pwm(4, (int32_t)motor_R1.output);
 
-		printf("%d,%d,%d,%d\r\n",(int)motor_L0.measure,(int)motor_L1.measure,(int)motor_R0.measure,(int)motor_R1.measure);
-//		printf("%d,%d\r\n",(int)motor_L0.measure,(int)motor_L0.target);
+//		printf("%d,%d,%d,%d\r\n",(int)motor_L0.measure,(int)motor_L1.measure,(int)motor_R0.measure,(int)motor_R1.measure);
+//		printf("%d,%d\r\n",(int)motor_R1.measure,(int)motor_R1.target);
 //		printf("%5d  %5d %5d %5d\r\n",(int)direction[0],(int)high_time[1],(int)direction[2],(int)direction[3]);
 		vTaskDelayUntil(&xLastWakeTime, (5/portTICK_RATE_MS));//绝对休眠5ms // INCLUDE_vTaskDelayUntil 1
 	

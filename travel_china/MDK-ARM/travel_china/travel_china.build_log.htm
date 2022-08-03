@@ -27,7 +27,14 @@ Project File Date:  08/02/2022
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'travel_china'
-"travel_china\travel_china.axf" - 0 Error(s), 0 Warning(s).
+compiling motor_task.c...
+..\Motor\motor_task.c(33): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  			motor_all.Distance =((motor_all.encoder_avg * 6.8f * PI)/(572.0f));//×ª»»Îª1Ã×
+..\Motor\motor_task.c: 1 warning, 0 errors
+linking...
+Program Size: Code=40476 RO-data=932 RW-data=3576 ZI-data=19856  
+FromELF: creating hex file...
+"travel_china\travel_china.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -51,7 +58,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:05
 </pre>
 </body>
 </html>

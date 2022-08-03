@@ -38,7 +38,7 @@ void motor_set_pwm(uint8_t motor, int32_t pid_out)
 		{
 			case 1: TIM1->CCR2 = 0; TIM1->CCR4 = ccr;	break;
 			case 2: TIM1->CCR1 = 0; TIM1->CCR3 = ccr;	break;
-			case 3: TIM2->CCR3 = 0; TIM2->CCR1 = ccr;	break;
+			case 3: TIM2->CCR1 = 0; TIM2->CCR3 = ccr;	break;
 			case 4: TIM2->CCR4 = 0; TIM2->CCR2 = ccr;	break;
 			default: ; //TODO
 		}
@@ -55,7 +55,7 @@ void motor_set_pwm(uint8_t motor, int32_t pid_out)
 		{
 			case 1: TIM1->CCR4 = 0; TIM1->CCR2 = ccr;	break;  //正
 			case 2: TIM1->CCR3 = 0; TIM1->CCR1 = ccr;   break; 	//反
-			case 3: TIM2->CCR1 = 0; TIM2->CCR3 = ccr;	break;	//正
+			case 3: TIM2->CCR3 = 0; TIM2->CCR1 = ccr;	break;	//正
 			case 4: TIM2->CCR2 = 0; TIM2->CCR4 = ccr;	break;	//反
 			
 			

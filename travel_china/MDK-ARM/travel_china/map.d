@@ -66,3 +66,6 @@ travel_china\map.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_
 travel_china\map.o: ..\module\bsp_linefollower.h
 travel_china\map.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 travel_china\map.o: ..\module\bsp_buzzer.h
+travel_china\map.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+travel_china\map.o: ..\Motor\encoder.h
+travel_china\map.o: ../Core/Inc/tim.h

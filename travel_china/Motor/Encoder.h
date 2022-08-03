@@ -26,6 +26,7 @@ extern int  direction[4];                //正反转识别
 void Encoder_init(void); 
 void Encoder_task(void *pvParameters);
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
+void encoder_clear(void);
 
 extern uint8_t dog[4];   //电机狗
 

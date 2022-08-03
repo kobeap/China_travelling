@@ -9,58 +9,35 @@
 #include "bsp_linefollower.h"
 #include "scaner.h"
 #include "speed_ctrl.h"
+#include "encoder.h"
+#include "barrier.h"
+#include "motor_task.h"
 void main_task(void *pvParameters){
-	static int i=0;
+	portTickType xLastWakeTime;
+	xLastWakeTime = xTaskGetTickCount();   //获取系统节拍
+		runWithAngle(0,300);
+			while(imu.pitch>Down_pitch)
+			{
+				vTaskDelay(2);
+			}//下桥
+			while(imu.pitch<After_down)
+			{
+				vTaskDelay(2);
+			}//下桥完毕
+				//路程记录清零
+			encoder_clear();
+			pid_mode_switch(is_Line); 
+	        motor_all.Cspeed = 500;
+//	Barrier_Bridge(0,0);
 	while(1){
 //		Barrier_Bridge(0,0);
 //		getline_error();
 //		Go_Line(500);
 //        vTaskDelay(5);
-		if(i==0)
-		{
-			runWithAngle(0,300);
-			while(imu.pitch>0)
-			{
-				vTaskDelay(2);
-			}//下桥
-			while(imu.pitch<-8)
-			{
-				vTaskDelay(2);
-			}
-		}
-		i=1;
+    
+//	
 	    Cross();	
-		vTaskDelay(2);
-//		vTaskDelay(5);
-//		Barrier_Bridge(0,0);
-//    	Sword_Mountain();
-//		printf("pitch=%f\r\n",imu.pitch);
-		
-//		 printf("roll=%f,pitch=%f,yaw=%f \r\n",imu.roll,(imu.pitch-imu.compensatePitch),getAngleZ());
-//		 vTaskDelay(10);
-////		if(HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_9))
-////		{
-////			printf("ok1");
-////		}
-////		if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_13))
-////		{
-////			printf("ok2");
-////		}
-////		if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_15))
-////		{
-////			printf("ok3");
-////		}
-////		if(HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_8))
-////		{
-////			printf("ok4");
-////		}
-////		if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_14))
-////		{
-////			printf("ok5");
-////		}
-////		if(HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_10))
-////		{
-////			printf("ok6");
-////		}
+	vTaskDelayUntil(&xLastWakeTime, (5/portTICK_RATE_MS));//绝对休眠5ms // INCLUDE_vTaskDelayUntil 1
+
 	}
 }

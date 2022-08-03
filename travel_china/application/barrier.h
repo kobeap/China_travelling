@@ -2,6 +2,11 @@
 #define __BARRIER_H
 
 #include "sys.h"
+#define basic_p   -8
+#define Up_pitch   basic_p+12   //while(imu.pitch<Up_pitch)  出循环 刚上桥
+#define Down_pitch basic_p-12   //while(imu.pitch>Down_pitch)出循环 刚下桥 
+#define After_down basic_p-3    //while(imu.pitch<After_down)出循环下完 在平地
+#define After_up   basic_p+3    //while(imu.pitch>After_up)出循环上完 在平地
 
 void Stage(void);
 void Barrier_Bridge(float step,float speed);

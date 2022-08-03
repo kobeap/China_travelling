@@ -2,6 +2,7 @@
 #include  <stdlib.h>
 #include <string.h>
 #include "uart.h"
+#include "speed_ctrl.h"
 wheel wheel_1,wheel_2,wheel_3,wheel_4;
 uint32_t capture_Buf_before[4] = {0},capture_Buf_latter[4] = {0};   //存放计数时间
 uint8_t  capture_Cnt[4] = {0};    			//状态标志位（用于切换模式）
@@ -324,4 +325,19 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 			  break; 
 		 }
 	}
+}
+//重新计算脉冲
+void encoder_clear(void)
+{
+	HAL_TIM_IC_Stop_IT(&wheel_1.TIM,wheel_1.channelA);
+	HAL_TIM_IC_Stop_IT(&wheel_2.TIM,wheel_2.channelA);
+	HAL_TIM_IC_Stop_IT(&wheel_3.TIM,wheel_3.channelA);
+	HAL_TIM_IC_Stop_IT(&wheel_4.TIM,wheel_4.channelA);
+	memset((void * )pulse_num,(int)0,(unsigned int )sizeof(pulse_num));//覆盖
+	memset((void * )pulse_out,(int)0,(unsigned int )sizeof(pulse_out));//覆盖
+	motor_all.Distance = 0;
+	HAL_TIM_IC_Start_IT(&(wheel_1.TIM), wheel_1.channelA);	  //启动输入捕获
+	HAL_TIM_IC_Start_IT(&(wheel_2.TIM), wheel_2.channelA);	  //启动输入捕获
+	HAL_TIM_IC_Start_IT(&(wheel_3.TIM), wheel_3.channelA);	  //启动输入捕获
+	HAL_TIM_IC_Start_IT(&(wheel_4.TIM), wheel_4.channelA);	  //启动输入捕获
 }

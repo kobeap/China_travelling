@@ -66,6 +66,7 @@ travel_china\barrier.o: ..\Motor\motor_task.h
 travel_china\barrier.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 travel_china\barrier.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 travel_china\barrier.o: ..\module\bsp_buzzer.h
+travel_china\barrier.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 travel_china\barrier.o: ..\module\bsp_led.h
 travel_china\barrier.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 travel_china\barrier.o: ..\MDK-ARM\QR.h

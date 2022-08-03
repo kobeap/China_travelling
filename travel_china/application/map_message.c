@@ -6,17 +6,17 @@
 NODE Node[118]={
 /*S1	 1*/	{N3,CLEFT,160,250,110,1},
 
-/*P1 	 2*/	{N1,CRIGHT,180,30,70,1},	// step 25
+/*P1 	 2*/	{N1,CRIGHT,180,70,300,1},	// step 25
 
-/*N1 	 3*/	{P1,NO,0,70,300,UpStage},{B2,NO,135,40,50,BHill},{B1,NO,180,25,70,BBridge},
+/*N1 	 3*/	{P1,RIGHT_LINE,0,50,300,UpStage},{B2,NO,135,40,50,BHill},{B1,NO,180,25,70,BBridge},
 
-/*B1	 K*/	{N1,CLEFT,0,40,400,1},/* step 25 *//*{N1,NO,0,25,70,IGNORE},楼梯被撬掉*/{N2,CRIGHT|LEFT_LINE,180,70,90,1},
+/*B1	 K*/	{N1,CLEFT|RIGHT_LINE,0,60,400,1},/* step 25 *//*{N1,NO,0,25,70,IGNORE},楼梯被撬掉*/{N2,CRIGHT|LEFT_LINE,180,70,90,1},
 
 /*B2	 K*/	{N1},{N4,CLEFT|DLEFT|STOPTURN,132,90,70,1},
 
 /*B3	 K*/	{N2,CLEFT,-160,20,70,1},{N4,CLEFT,30,64,70,1},
 
-/*N2 	 4*/	{B3,NO,30,30,70,BLBS}, {P2,NO,-178,86,70,UpStage},{B1,NO,0,80,500,BBridge},//速度原来是50  70
+/*N2 	 4*/	{B3,NO,30,30,70,BLBS}, {P2,NO,-178,86,70,UpStage},{B1,RIGHT_LINE,0,70,500,BBridge},//速度原来是50  70
 	
 /*P2 	 5*/	{N2,/*CLEFT|DLEFT*/CLEFT|RIGHT_LINE,0,20,90,1},	// step 10		
 

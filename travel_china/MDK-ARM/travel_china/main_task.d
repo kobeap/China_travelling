@@ -71,3 +71,7 @@ travel_china\main_task.o: ..\application\scaner.h
 travel_china\main_task.o: ..\Math\pid.h
 travel_china\main_task.o: ..\application\speed_ctrl.h
 travel_china\main_task.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+travel_china\main_task.o: ..\Motor\encoder.h
+travel_china\main_task.o: ../Core/Inc/tim.h
+travel_china\main_task.o: ..\Motor\motor_task.h
+travel_china\main_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
