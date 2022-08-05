@@ -22,7 +22,8 @@ struct Map_State map = {0,0};
 //u8 route[100] = {N9,B9,N7,P5,N7,0XFF};
 
 //u8 route [100] = {B1,N1,P1,N1,B2,N4,N5,N6,P4,N6,N5,N4,N3,P3,N3,N10,0XFF};    //走门路线
-u8 route[100]={B1,N1,P1,N1,0xff};
+//u8 route[100]={B1,N1,P1,N1,B2,N4,N5,N6,P4,N6,N5,N4,N3,P3,0xff};
+u8 route[100]={B2,N4,N5,N6,P4,N6,N5,N4,N3,P3,0xff};
 //u8 route[100] = {P7,N20,C4,C8,C7,N14,C3,N9,B9,N7,P5,N7,0XFF};   //qqb
 
 //u8 route[100] = {B9,N7,0XFF};
@@ -62,19 +63,25 @@ NODESR nodesr;	//运作中间变量
 //地图初始化
 void mapInit()
 {
-//	u8 i=0;
-	nodesr.nowNode.nodenum = N2;		//起始点   //N2
-	nodesr.nowNode.angle = 0;		//起始角度   //0
+	u8 i=0;
+//	nodesr.nowNode.nodenum = N2;		//起始点   //N2
+//	nodesr.nowNode.angle = 0;		//起始角度   //0
+//	nodesr.nowNode.function = 1;	//起始函数   //1
+//	nodesr.nowNode.speed = 300;//300             
+//	nodesr.nowNode.step= 60;//60               
+//	nodesr.nowNode.flag = CLEFT|RIGHT_LINE;    //CLEFT|RIGHT_LINE
+	nodesr.nowNode.nodenum = N1;		//起始点   //N2
+	nodesr.nowNode.angle = 180;		//起始角度   //0
 	nodesr.nowNode.function = 1;	//起始函数   //1
-	nodesr.nowNode.speed = 300;//60             //80
-	nodesr.nowNode.step= 50;//30               //20
-	nodesr.nowNode.flag = CLEFT|RIGHT_LINE;    //CLEFT|RIGHT_LINE
+	nodesr.nowNode.speed = 300;//300             
+	nodesr.nowNode.step= 70;//60               
+	nodesr.nowNode.flag = CRIGHT;    //CLEFT|RIGHT_LINE
 //	for(i=0;i<107;i++)				//把地图长度信息的厘米转化成编码器数
 //		Node[i].step*=58.22;
 //	for(i=0;i<107;i++)				//把地图长度信息的厘米转化成编码器数
 //		Node[i].flag|=STOPTURN;
 //	for(i=0;i<118;i++)			//全地图速度调整
-//		Node[i].speed*=1.8;	
+//		Node[i].speed*=1.2;	
 }
 
 
@@ -99,26 +106,10 @@ u8 deal_arrive()
 	register uint8_t lnum = 0, i = 0;
 	register uint16_t seed = 0;
 	static uint16_t mul2sing = 0, sing2mul = 0;
-	
+	getline_error();
 	if ((nodesr.nowNode.flag & DLEFT) == DLEFT)  //左半边
 	{
 		//左边6个灯任意5个亮即可
-		if (Scaner.ledNum >= 5)
-		{
-			seed = 0X0001;
-			for (i = 0; i<6; i++)
-			{
-				if (Scaner.detail & seed)
-					++lnum;
-				if (lnum >= 5)
-					return 1;
-				seed <<= 1;
-			}
-			lnum = 0;
-		}
-	}
-	if ((nodesr.nowNode.flag & DRIGHT) == DRIGHT)//右半边
-	{
 		if (Scaner.ledNum>=5)
 		{
 			seed = 0X8000;
@@ -133,11 +124,27 @@ u8 deal_arrive()
 			lnum = 0;
 		}
 	}
+	if ((nodesr.nowNode.flag & DRIGHT) == DRIGHT)//右半边
+	{    	
+		if (Scaner.ledNum >= 5)
+		{
+			seed = 0X0001;
+			for (i = 0; i<6; i++)
+			{
+				if (Scaner.detail & seed)
+					++lnum;
+				if (lnum >= 5)
+					return 1;
+				seed <<= 1;
+			}
+			lnum = 0;
+		}
+	}
 
 	if ((nodesr.nowNode.flag & CLEFT) == CLEFT)//左分岔路
 	{
 		//左边数起第二、第三个灯任意一个亮即可
-		 if( (Scaner.ledNum>=4&&Scaner.ledNum<=7) && ((Scaner.detail&0x1000)|(Scaner.detail&0x2000)) )
+		 if( (Scaner.ledNum>=4&&Scaner.ledNum<=7) && ((Scaner.detail&0x4000)|(Scaner.detail&0x2000)) )//
 		 {
 			return 1;
 		}
@@ -160,7 +167,7 @@ u8 deal_arrive()
 	}
 	if ((nodesr.nowNode.flag & CRIGHT) == CRIGHT)//右分岔路
 	{
-		 if( (Scaner.ledNum>=4&&Scaner.ledNum<=7) && (Scaner.detail&0x6000) )
+		 if( (Scaner.ledNum>=4&&Scaner.ledNum<=7) && (Scaner.detail&0xc) )//右起2和3灯亮
 		{
 			return 1;
 		}
@@ -231,32 +238,22 @@ void Cross()
 				mpuZreset(imu.yaw, nodesr.nowNode.angle);     //获取补偿角Z
 				//nodesr.nowNode.flag&=~0x80;
 			}
-			
-			//跟着霆哥删的
-			/*if(((nodesr.nowNode.flag&RESTPID)==RESTPID))
-			{
-				//motor_pid_clear();
-				nodesr.nowNode.flag&=~0x80;    //10000000
-			}*/
-			
-			
-			//条件1：转弯角度小于10度
-			//条件2：下一个路口不是T字型路口
+
 			if( (fabs(need2turn(getAngleZ(),nodesr.nextNode.angle))<=10) || (fabs(need2turn(nodesr.nowNode.angle,nodesr.nextNode.angle))<=10))
 			{													 		
-				motor_all.Cincrement = 2;	  //原来是1
+				motor_all.Cincrement = 20;	  //原来是1
 				motor_all.Cspeed = nodesr.nowNode.speed;	
 			 }
 			else
 			{
-				motor_all.Cincrement = 2.5;	//默认加速度 原来是1.5
+				motor_all.Cincrement = 25;	//默认加速度 原来是1.5
 				if ((nodesr.nowNode.flag & SLOWDOWN) == SLOWDOWN)
 				{
 					motor_all.Cspeed = 200;
 				}
-				if(0.5*nodesr.nowNode.speed>40)
+				if(0.5*nodesr.nowNode.speed>500)
 				{
-					motor_all.Cspeed=300;// 原来 40 
+					motor_all.Cspeed=700;// 原来 40 
 				}
 				else
 				{
@@ -266,7 +263,7 @@ void Cross()
 		}
 		else//未达到0.7的距离
 		{
-			motor_all.Cincrement = 2.5;	//默认加速度  原来是1.5
+			motor_all.Cincrement = 25;	//默认加速度  原来是1.5
 			motor_all.Cspeed=nodesr.nowNode.speed;// 0.8原来是
 		}
 		
@@ -281,6 +278,7 @@ void Cross()
 			nodesr.flag |= 0x04;	//到达路口
 			
 			buzzer_on();
+
 			if(nodesr.nowNode.nodenum == N8)
 			{
 				delay_ms(50);
@@ -296,6 +294,14 @@ void Cross()
 			buzzer_off();
 			
 		}	
+		if(special_arrive==1)//特殊的切换循迹结点
+		{
+			buzzer_on();
+			scaner_set.CatchsensorNum = 0;
+			nodesr.flag |= 0x04;	//到达路口
+			buzzer_off();
+			special_arrive=0;
+		}
 	}
 	if((nodesr.flag&0x04)==0x04)//转弯（已经到达路口）
 	{	
@@ -319,38 +325,6 @@ void Cross()
 							vTaskDelay(2);
 						}
 					}
-//					else if(nodesr.nowNode.nodenum == C9)
-//					{
-//						while(motor_all.Distance-num < 3);
-//					}
-//					else if(nodesr.nextNode.nodenum == B6)
-//					{
-//						while(motor_all.Distance-num < 12);
-//					}
-//					else if(nodesr.nowNode.nodenum == N8)
-//					{
-//						while(motor_all.Distance-num < 8); 
-//					}
-//					else if(nodesr.nextNode.nodenum == N4)
-//					{
-//						while(motor_all.Distance-num < 27); 
-//					}
-//					else if(nodesr.nowNode.nodenum == N3)
-//					{
-//						while(motor_all.Distance-num < 5); 
-//					}
-//					else if(nodesr.nowNode.nodenum == C1)
-//					{
-//						while(motor_all.Distance-num < 22);
-//					}
-//					else if(nodesr.nowNode.nodenum == N12)
-//					{
-//						while(motor_all.Distance-num < 9);
-//					}
-//					else
-//					{
-//						while(motor_all.Distance-num<5);	//步长延时，用于等待车中中心到达路口,原来是15
-//					}
 					angle.AngleT = nodesr.nextNode.angle;  //转绝对角度
 					pid_mode_switch(is_Turn);	
 					while(fabs(nodesr.nextNode.angle-getAngleZ())>2)
@@ -358,20 +332,9 @@ void Cross()
 						vTaskDelay(2);
 					}
 					CarBrake();
-					delay_ms(20);
+					vTaskDelay(20);
 					motor_pid_clear();
-					_flag=1;
-
-					/***霆哥*********/
-//					Turn_Angle_Relative(need2turn(nodesr.nowNode.angle, nodesr.nextNode.angle));	
-//					while(fabs(angle.AngleT - getAngleZ())>3);
-//					CarBrake();
-//					delay_ms(10);
-//					motor_pid_clear();
-//					_flag=1;				
-					/****************/
-					
-					
+					_flag=1;				
 				}
 				else		//差速转
 				{	
@@ -379,14 +342,15 @@ void Cross()
 					{
 						pid_mode_switch(is_Free);
 						turn=need2turn(getAngleZ(),nodesr.nextNode.angle);
-					//	turnspeed=82*(180-fabs(need2turn(getAngleZ(),nodesr.nextNode.angle)))/360;//无用
 						while(fabs(turn)>4)//需要转动大于4度
 						{
 							turn=need2turn(getAngleZ(),nodesr.nextNode.angle);
-							turnspeed=84*(180-fabs(need2turn(getAngleZ(),nodesr.nextNode.angle)))/360;
-							AdCircle(turnspeed,turn/1.4);
+							turnspeed=300*(180-fabs(need2turn(getAngleZ(),nodesr.nextNode.angle)))/360;
+							AdCircle(turnspeed,turn*14);
 							vTaskDelay(2);
+							buzzer_on();
 						}
+						buzzer_off();
 						_flag=1;	
 					}			
 					else
@@ -410,7 +374,7 @@ void Cross()
 			pid_mode_switch(is_Line);	
 			nodesr.nowNode=nodesr.nextNode;	//更新结点
 			nodesr.nextNode	= Node[getNextConnectNode(nodesr.nowNode.nodenum,route[map.point++])];//获取下一结点	
-			
+			scaner_set.EdgeIgnore=0;
 			//路程记录清零
 		     encoder_clear();
 		} 
@@ -457,6 +421,7 @@ void map_function(u8 fun)
 		case Scurve	  	:S_curve();  break;
 		case IGNORE     :ignore_node(); break;  //忽略该节点
 		case UNDER      :undermou();break;
+		case Special_node :Special_Node();break;
 		default:break;		
 	}
 }

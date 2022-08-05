@@ -24,9 +24,9 @@ extern const float line_weight[16];
 
 void Go_Line(float speed);
 void get_detail(void);
-void Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore);
+uint8_t Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore);
 void actions(uint8_t action);
-void getline_error(void);
+uint8_t getline_error(void);
 
 
 #define GPIO_Left1 GPIOE

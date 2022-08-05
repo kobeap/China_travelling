@@ -7,7 +7,7 @@
 #define Down_pitch basic_p-12   //while(imu.pitch>Down_pitch)出循环 刚下桥 
 #define After_down basic_p-3    //while(imu.pitch<After_down)出循环下完 在平地
 #define After_up   basic_p+3    //while(imu.pitch>After_up)出循环上完 在平地
-
+extern uint8_t special_arrive;
 void Stage(void);
 void Barrier_Bridge(float step,float speed);
 void Barrier_Hill(uint8_t order) ;
@@ -27,4 +27,5 @@ void S_curve(void);
 void special_node(void);
 void ignore_node(void);
 void undermou(void);
+void Special_Node(void);
 #endif

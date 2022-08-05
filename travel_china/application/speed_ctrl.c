@@ -8,8 +8,8 @@ volatile struct Motors motor_all = {
 	.encoder_avg = 0,
 	.GyroG_speedMax = 50,  //自平衡左右偏差最大值
 	.GyroT_speedMax = 1000,//自传最大速度
-	.Cincrement = 1.5,	//循迹加速度
-	.Gincrement = 1.5,		//非循迹加速度
+	.Cincrement = 25,	//循迹加速度
+	.Gincrement = 25,		//非循迹加速度
 	
 	.is_UP = false,
 	.is_DOWM = false,

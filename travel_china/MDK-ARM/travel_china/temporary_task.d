@@ -70,3 +70,6 @@ travel_china\temporary_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_
 travel_china\temporary_task.o: ..\module\bsp_led.h
 travel_china\temporary_task.o: ..\application\turn.h
 travel_china\temporary_task.o: ..\application\sys.h
+travel_china\temporary_task.o: ..\application\map.h
+travel_china\temporary_task.o: ..\application\map_message.h
+travel_china\temporary_task.o: ..\application\map.h

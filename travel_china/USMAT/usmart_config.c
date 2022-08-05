@@ -19,7 +19,8 @@ struct _m_usmart_nametab usmart_nametab[]=
 	(void*) chage_target,"void chage_target(uint16_t targetq)",
 	(void*) speed_pid_kp,"void speed_pid_kp(int param)",
 	(void*)speed_pid_kd,"void speed_pid_kd(int param)",
-    (void*)	speed_pid_ki,"void speed_pid_ki(int param)",	
+    (void*)	speed_pid_ki,"void speed_pid_ki(int param)",
+	
 #endif		   
 //	(void*)delay_ms,"void delay_ms(u16 nms)",					
 };						  

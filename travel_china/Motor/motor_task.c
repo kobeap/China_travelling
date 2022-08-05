@@ -56,9 +56,18 @@ void motor_task(void *pvParameters){
 			{
 				if (PIDMode == is_Line)
 				{
-					getline_error();
-					gradual_cal(&TC_speed, motor_all.Cspeed, motor_all.Cincrement);
-					Go_Line(TC_speed.Now);
+//					if(getline_error())
+//					{
+//						motor_all.Gspeed = 300;
+//						gradual_cal(&TG_speed, motor_all.Gspeed, motor_all.Gincrement);			
+//						runWithAngle(angle.AngleG, TG_speed.Now);
+//					}
+//					else
+//					{
+					    getline_error();
+						gradual_cal(&TC_speed, motor_all.Cspeed, motor_all.Cincrement);
+						Go_Line(TC_speed.Now);
+//					}
 				}
 				else
 					motor_all.Cspeed = 0;
@@ -83,7 +92,7 @@ void motor_task(void *pvParameters){
 			}
 			
 			
-//    		runWithAngle(0,300);	
+//    		runWithAngle(0,700);	
 			motor_L0.target = motor_L1.target = motor_all.Lspeed;
 			motor_R0.target = motor_R1.target = motor_all.Rspeed;
 			mouse++;

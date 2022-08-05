@@ -11,6 +11,7 @@
 #include "imu_task.h"
 #include "bsp_led.h"
 #include "turn.h"
+#include "map.h"
 /*
 开始任务
 */
@@ -58,7 +59,7 @@ void user_init(void){
 		mpuZ_reset_val += imu.yaw;  
 	}
 	mpuZ_reset_val /= 10;   // 这是当前的0°角
-	mpuZreset(mpuZ_reset_val, 0);//把此时角度变为0度
+	mpuZreset(mpuZ_reset_val, nodesr.nowNode.angle);//把此时角度变为此结点角度
 }
 
 

@@ -27,7 +27,7 @@
 
 extern int BW_num[];
 int value;//openmv接口
-
+uint8_t special_arrive=0;
 //防抖动系列函数
 //1._shake在平台识别过程中，防止因一些意外因素导致车提前停止,同时完成撞板的目的
 //2._Rshake用于判断其是否经过波浪板
@@ -120,12 +120,12 @@ void Stage()		//flag==1时取绝度角度，flag==0时取相对角度
 	{
 		angle.AngleG = getAngleZ();//自平衡走的角度
 		pid_mode_switch(is_Gyro);
-		motor_all.Gspeed = 200;
+		motor_all.Gspeed = 300;
 	}
 	else{
 		angle.AngleG = nodesr.nowNode.angle;//自平衡走的角度
 		pid_mode_switch(is_Gyro);
-		motor_all.Gspeed = 200;
+		motor_all.Gspeed = 300;
 	}
     while(imu.pitch<Up_pitch)
 	{
@@ -143,7 +143,7 @@ void Stage()		//flag==1时取绝度角度，flag==0时取相对角度
 	}  //撞挡板
 
 	num = motor_all.Distance;				
-	while(motor_all.Distance - num < 35)//前进一段距离
+	while(motor_all.Distance - num < 30)//前进一段距离
 	{
 		vTaskDelay(5);
 	}
@@ -159,86 +159,100 @@ void Stage()		//flag==1时取绝度角度，flag==0时取相对角度
 //	motor_R0.target = motor_R1.target = BACK_SPEED;
 	motor_all.Lspeed = motor_all.Rspeed = BACK_SPEED;
 	
-	while (num-motor_all.Distance < 20)
+	while (num-motor_all.Distance < 15)
 	{
 		vTaskDelay(5);
 	}
 	CarBrake();
 	
 	buzzer_on();
-	vTaskDelay(1000);
+	vTaskDelay(500);
 	buzzer_off();
-//	if(nodesr.nowNode.nodenum == P1)
-//	{
-//		if(AI_shake(800)) 
-//		{
-//			BW_num[0] = 3;
-////			printf("%d\r\n",BW_num[0]);
-//		}
-//		else
-//		{
-//			BW_num[0] = 4;
-////			printf("%d\r\n",BW_num[0]);
-//		}
-//	}
-//	else if(nodesr.nowNode.nodenum == P3 || nodesr.nowNode.nodenum == P4)
-//	{
-//		if(AI_shake(100)) 
-//		{
-//			BW_num[1] = 5;
-//		}
-//		else
-//		{
-//			BW_num[1] = 6;
-//		}
-//	}
-//	else if(nodesr.nowNode.nodenum == P6)
-//	{
-//		if(AI_shake(100)) 
-//		{
-//			BW_num[2] = 7;
-//		}
-//		else
-//		{
-//			BW_num[2] = 8;
-//		}
-//	}
-//	
+
 	motor_pid_clear();
 
-//	Shine_o_f();       //闪灯一次
-//	actions(5);     
-//	delay_ms(100);
-//	actions(3);
-//	delay_ms(100);
 	Turn_Angle_Relative(179);
 	while (fabs(angle.AngleT-getAngleZ())>2)
 	{
 		vTaskDelay(5);
 	}
-	
-//	if(check_BW(nodesr.nowNode.nodenum)) //检测宝物
-//		{
-//			actions(1);
-//			delay_ms(50);
-//			Turn_Angle360();
-//			actions(2);
-////			delay_ms(50);
-////		}
-//	actions(6);
-//	delay_ms(100);
-
 	motor_pid_clear();
+    pid_mode_switch(is_Gyro);
+	motor_all.Gspeed=300;
+	angle.AngleG=nodesr.nowNode.angle-179;
 	while(imu.pitch>Down_pitch)
 	{
 		vTaskDelay(2);
 	}
+	motor_pid_clear();
 	pid_mode_switch(is_Line);
-	
+	motor_all.Cspeed=300;
 	nodesr.nowNode.function=0;	//清除障碍标志
 	nodesr.flag|=0x04;	//到达路口
 }
-
+//特殊结点
+void Special_Node()
+{
+	
+	if(((nodesr.nowNode.flag&DRIGHT)==DRIGHT)&((nodesr.nowNode.flag&CRIGHT)==CRIGHT))//N4-N5右循迹 左循迹 边缘忽略
+	{
+		nodesr.nowNode.flag&=(~RIGHT_LINE);//取消右循迹标志位
+		nodesr.nowNode.flag|=LEFT_LINE;//左循迹
+		while(deal_arrive()!=1)
+		{
+			vTaskDelay(2);
+		}//右分岔
+		nodesr.nowNode.flag&=(~CRIGHT);//取消右分岔标志位
+	    while(deal_arrive()!=1)//右半边天
+		{
+			vTaskDelay(2);
+			scaner_set.EdgeIgnore=6;
+			special_arrive=1;
+		}
+	}
+	else if((nodesr.nowNode.flag&CRIGHT)==CRIGHT)//N5-N4
+	{
+		float num=0;
+		nodesr.nowNode.flag|=LEFT_LINE;//左循迹
+		while(deal_arrive()!=1)
+		{
+			vTaskDelay(2);
+		}
+		num=motor_all.Distance;
+		while(motor_all.Distance-num<10)//第一个左分岔路口再走10厘米
+		{
+			vTaskDelay(2);
+		}
+		while(deal_arrive()!=1)
+		{
+			vTaskDelay(2);
+		}
+	}
+	else
+	{
+		angle.AngleG=getAngleZ();
+		motor_all.Gspeed=300;
+		pid_mode_switch(is_Gyro);
+	}
+//	if(((nodesr.nowNode.flag&CRIGHT)==CRIGHT)&((nodesr.nowNode.flag&CLEFT)==CLEFT))//N5-N6  P4-N6先左循迹后右循迹 
+//	{
+//		angle.AngleT=getAngleZ();
+//		pid_mode_switch(is_Gyro);
+////		nodesr.nowNode.flag|=LEFT_LINE;//左循迹
+////		while(deal_arrive()!=1)
+////		{
+////			vTaskDelay(2);
+////		}//检测到右分岔
+////		nodesr.nowNode.flag&=(~CRIGHT);//取消右分岔标志位
+////		while(deal_arrive()!=1)
+////		{
+////			vTaskDelay(2);
+////		}//检测到左分岔
+////		nodesr.nowNode.flag&=(~LEFT_LINE);//取消左循迹
+////		nodesr.nowNode.flag|=RIGHT_LINE;//右循迹
+////		special_arrive=1;
+//	}
+}
 
 //平台二的动作
 void Stage_P2()		//flag==1时取绝度角度，flag==0时取相对角度
@@ -265,6 +279,8 @@ void Stage_P2()		//flag==1时取绝度角度，flag==0时取相对角度
 
 void Barrier_Bridge(float step,float speed)	//过长桥
 {
+	float num=0;
+	num=motor_all.Distance;
 	motor_all.Gspeed = 300;    //自平衡速度
 	if ((Scaner.detail & 0X0180) == 0X0180) //如果在最中间位置
 	{
@@ -276,7 +292,7 @@ void Barrier_Bridge(float step,float speed)	//过长桥
 		pid_mode_switch(is_Gyro);
 	}
 	struct PID_param origin_param = gyroG_pid_param;
-	gyroG_pid_param.kp = 4.5;//原来3.7
+	gyroG_pid_param.kp = 4.8;//原来3.7
 	
 	while(imu.pitch <= Up_pitch)	//还在平地,出循环就是上桥中
 	{
@@ -287,7 +303,7 @@ void Barrier_Bridge(float step,float speed)	//过长桥
 	{
 		vTaskDelay(2);
 	}//上桥完毕
-	motor_all.Gspeed = 800;   //原来65   90
+	motor_all.Gspeed = 500;   //原来65   90
 	while(imu.pitch > Down_pitch)          
 	{
 		infrared_open();
@@ -319,7 +335,10 @@ void Barrier_Bridge(float step,float speed)	//过长桥
 			angle.AngleG = getAngleZ();//正确的角度
 			buzzer_off();
 		}
-			motor_all.Gspeed = 800;      //原来是65   75
+		if (motor_all.Distance-num < 200)
+			motor_all.Gspeed = 500;     //原来是80  90
+		else
+			motor_all.Gspeed = 500;      //原来是65   75
 		vTaskDelay(2);
 	}
 //	while(imu.pitch<Down_pitch)
@@ -344,22 +363,24 @@ void Barrier_Bridge(float step,float speed)	//过长桥
 //过楼梯
 void Barrier_Hill(uint8_t order)  //楼梯数量
 {
+	angle.AngleG = getAngleZ();
 	struct PID_param origin_param = line_pid_param;
-	motor_all.Cspeed = 45;   //原来是60
+	motor_all.Cspeed = 400;   //原来是60
 	line_pid_param.kp = 50;
 	pid_mode_switch(is_Line);
-	while ( imu.pitch > -10 );  //平地
-	motor_all.Cspeed = 45;
-	while(imu.pitch < -10);  //坡上
-	while(imu.pitch<10);  //第一个平地
-	
-	if (order == 2)
+	while ( imu.pitch >10+basic_p )	
 	{
-		while (imu.pitch > 10);  //下第一个坡
-		while (imu.pitch > -10); //波谷
-		while (imu.pitch < -10);  //第二个上坡
-		while (imu.pitch < 10);  //第二个平地
-	}
+		vTaskDelay(2);
+	}//开始上楼梯
+	while(imu.pitch>-10+basic_p)
+	{
+		vTaskDelay(2);
+	}//开始下楼梯
+    while(imu.pitch<basic_p-3)
+	{
+		vTaskDelay(2);
+	}//下完楼梯
+
 	line_pid_param = origin_param;
 	nodesr.nowNode.function=0;//清除障碍标志
 	nodesr.flag|=0x04;	//到达路口
@@ -417,11 +438,11 @@ void Barrier_HighMountain()
 	line_pid_param.kd = 15;
 	
 	motor_all.Cspeed = 70; //最开始还没上坡的速度 90
-	motor_all.Cincrement = 2;
+	motor_all.Cincrement = 20;
 	pid_mode_switch(is_Line);
 	while(imu.pitch>-17);//平地
     
-	motor_all.Cincrement = 1.8; //上坡的速度  2
+	motor_all.Cincrement = 18; //上坡的速度  2
 	motor_all.Cspeed = 60;//80
 	
 //	num = motor_all.Distance;

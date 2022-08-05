@@ -8,8 +8,8 @@
 
 #define NO      	(1<<0) 
 #define DLEFT 		(1<<1)	//左边横线
-#define DRIGHT 		(1<<2)	//右边横线
-#define CLEFT		  (1<<3)	//左边斜线
+#define DRIGHT 		(1<<2)	//右边横线   右半边天
+#define CLEFT		  (1<<3)	//左边斜线  左分岔路
 #define CRIGHT		(1<<4)	//右边斜线
 #define MUL2SING	(1<<5)	//多条变一条
 #define MUL2MUL 	(1<<6)   //多条变多条
@@ -44,6 +44,7 @@ enum barriers {
 	Scurve,
 	IGNORE,
 	UNDER,
+	Special_node,
 };
 
 extern u8 door1route[100];

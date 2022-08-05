@@ -43,10 +43,17 @@ void Go_Line(float speed){
 	motor_all.Lspeed = speed-Fspeed;
 	motor_all.Rspeed = speed+Fspeed;
 }
-void getline_error()//获得更新不同巡线模式下的误差值
+uint8_t getline_error()//获得更新不同巡线模式下的误差值
 {
 	get_detail();//获取巡线值
-	Line_Scan(&Scaner, Lamp_Max, scaner_set.EdgeIgnore);
+	if(Line_Scan(&Scaner, Lamp_Max, scaner_set.EdgeIgnore))
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 void get_detail()
 {
@@ -99,10 +106,10 @@ void get_detail()
 	Scaner.detail = data;
 }
 //循迹扫描
-void Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
+uint8_t Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
 {
 	float error = 0;
-	u8 linenum=0;
+	u8 linenum=0;//记录线的数目
 	u8 lednum=0;
 	int8_t lednum_tmp = 0;
 							//获得二进制巡线值
@@ -146,28 +153,23 @@ void Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
 	}
 	else//后面再完善
 	{
-		for (uint8_t i=0; i<sensorNum; i++)//无任何处理的巡线
+		for(uint8_t i= edge_ignore; i<sensorNum - edge_ignore; i++) 
 		{
-			lednum_tmp += (scaner->detail>>(sensorNum-i-1))&0X01;//记录点灯数
-			error += ((scaner->detail>>(sensorNum-i-1))&0X01) * line_weight[i];
-		}
-//		if (lednum <= 7)  ////防止过多的灯带来的干扰
-//		{
-//				if(lednum >= 4)     //四个灯以上
-//					edge_ignore = 3;	//忽略边缘三个灯
-//				for(uint8_t i=edge_ignore; i<sensorNum-edge_ignore; i++) 
-//				{
-//					lednum_tmp += (scaner->detail>>i)&0X01;
-//					error += ((scaner->detail>>i)&0X01) * line_weight[sensorNum-i-1];
-//				}	
-//		}
-//		else     //灯太多给俺滚
-//			return;
+				lednum_tmp += (scaner->detail>>(sensorNum-1-i))&0X01;
+				error += ((scaner->detail>>(sensorNum-1-i))&0X01) * line_weight[i];
+		}	
 	}
-	
-	if(lednum==0)
-	{
-		error=0;
+//	if(lednum==0)
+//	{
+//		error=0;
+//	}
+	if(lednum_tmp >= 7 ||scaner->ledNum>=7)//目标灯数过多
+	{    
+			return 1;   //换陀螺仪
+	}
+	else if(lednum_tmp==0)//无灯
+	{  
+			return 1;		//换陀螺仪
 	}	
 	else
 	{
