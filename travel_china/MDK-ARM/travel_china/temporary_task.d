@@ -73,3 +73,5 @@ travel_china\temporary_task.o: ..\application\sys.h
 travel_china\temporary_task.o: ..\application\map.h
 travel_china\temporary_task.o: ..\application\map_message.h
 travel_china\temporary_task.o: ..\application\map.h
+travel_china\temporary_task.o: ..\MDK-ARM\openmv.h
+travel_china\temporary_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

@@ -7,12 +7,11 @@
 #include  "FreeRTOS.h"
 #include  "task.h"
 //此文件用于红外走
-#define FRAME_HEAD 0XAC
-#define RECEIVE_LEN 5
+
 
 volatile struct Infrared_Sensor infrared;
 
-void show_line(SCANER *gray);
+
 void infrared_open()
 {
 	//内左
@@ -47,15 +46,6 @@ void infrared_open()
 		}
 }
 
-
-void show_line(SCANER *gray)
-{
-	printf("%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d\r\n", 
-		(gray->detail&0X01), (gray->detail&0X02)>>1, (gray->detail&0X04)>>2, (gray->detail&0X08)>>3, 
-		(gray->detail&0X10)>>4, (gray->detail&0X20)>>5, (gray->detail&0X40)>>6, (gray->detail&0X80)>>7,
-		(gray->detail&0X100)>>8, (gray->detail&0X200)>>9, (gray->detail&0X400)>>10, (gray->detail&0X800)>>11,
-		(gray->detail&0X1000)>>12, (gray->detail&0X2000)>>13, (gray->detail&0X4000)>>14, (gray->detail&0X8000)>>15);
-}
 
 
 

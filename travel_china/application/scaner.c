@@ -176,4 +176,6 @@ uint8_t Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
 		error/=(float)lednum_tmp;		//È¡Æ½¾ù
 	}
 	Scaner.error = error;
+	return 0;
 }
+

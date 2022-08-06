@@ -194,7 +194,7 @@ void Stage()		//flag==1时取绝度角度，flag==0时取相对角度
 void Special_Node()
 {
 	
-	if(((nodesr.nowNode.flag&DRIGHT)==DRIGHT)&((nodesr.nowNode.flag&CRIGHT)==CRIGHT))//N4-N5右循迹 左循迹 边缘忽略
+	if(((nodesr.nowNode.flag&DRIGHT)==DRIGHT)&((nodesr.nowNode.flag&CRIGHT)==CRIGHT)&(nodesr.nowNode.nodenum==N5))//N4-N5右循迹 左循迹 边缘忽略
 	{
 		nodesr.nowNode.flag&=(~RIGHT_LINE);//取消右循迹标志位
 		nodesr.nowNode.flag|=LEFT_LINE;//左循迹
@@ -210,9 +210,10 @@ void Special_Node()
 			special_arrive=1;
 		}
 	}
-	else if((nodesr.nowNode.flag&CRIGHT)==CRIGHT)//N5-N4
+	else if((nodesr.nowNode.nodenum==N4)&((nodesr.nowNode.flag&CRIGHT)==CRIGHT))//N5-N4
 	{
 		float num=0;
+		nodesr.nowNode.flag&=(~RIGHT_LINE);
 		nodesr.nowNode.flag|=LEFT_LINE;//左循迹
 		while(deal_arrive()!=1)
 		{
@@ -228,10 +229,35 @@ void Special_Node()
 			vTaskDelay(2);
 		}
 	}
+	else if((nodesr.nowNode.nodenum==N4)&((nodesr.nowNode.flag&CLEFT)==CLEFT))//N3-N4
+	{
+		float num=0;
+		nodesr.nowNode.flag&=(~LEFT_LINE);
+		nodesr.nowNode.flag|=RIGHT_LINE;//右循迹
+		while(deal_arrive()!=1)
+		{
+			vTaskDelay(2);
+		}
+		num=motor_all.Distance;
+		while(motor_all.Distance-num<10)//第一个左分岔路口再走10厘米
+		{
+			vTaskDelay(2);
+		}
+		while(deal_arrive()!=1)
+		{
+			vTaskDelay(2);
+		}
+	}
+	else if((nodesr.nowNode.nodenum==N13&((nodesr.nowNode.flag&CLEFT)==CLEFT))&(((nodesr.nowNode.flag&CRIGHT)==CRIGHT)&((nodesr.nowNode.flag&DLEFT)==DLEFT))&((nodesr.nowNode.flag&DRIGHT)==DRIGHT))
+/*P6-N13*/	{
+		angle.AngleG=getAngleZ();
+		motor_all.Gspeed=200;
+		pid_mode_switch(is_Gyro);
+	}
 	else
 	{
 		angle.AngleG=getAngleZ();
-		motor_all.Gspeed=300;
+		motor_all.Gspeed=600;
 		pid_mode_switch(is_Gyro);
 	}
 //	if(((nodesr.nowNode.flag&CRIGHT)==CRIGHT)&((nodesr.nowNode.flag&CLEFT)==CLEFT))//N5-N6  P4-N6先左循迹后右循迹 
@@ -365,8 +391,7 @@ void Barrier_Hill(uint8_t order)  //楼梯数量
 {
 	angle.AngleG = getAngleZ();
 	struct PID_param origin_param = line_pid_param;
-	motor_all.Cspeed = 400;   //原来是60
-	line_pid_param.kp = 50;
+	motor_all.Cspeed = 200;   //原来是400
 	pid_mode_switch(is_Line);
 	while ( imu.pitch >10+basic_p )	
 	{
@@ -701,7 +726,7 @@ void Barrier_WavedPlate(float lenght)//波浪板长度
 //	Turn_Angle(need2turn(getAngleZ(),nodesr.nowNode.angle),36);
 //	while(fabs(Turn_Angle_Targe-getAngleZ())>5);
 
-	motor_all.Cspeed = 40;   
+	motor_all.Cspeed = 300;   
 	pid_mode_switch(is_Line);
 	num = motor_all.Distance;
 	while( motor_all.Distance-num < lenght);	

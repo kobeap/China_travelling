@@ -75,3 +75,5 @@ travel_china\main_task.o: ..\Motor\encoder.h
 travel_china\main_task.o: ../Core/Inc/tim.h
 travel_china\main_task.o: ..\Motor\motor_task.h
 travel_china\main_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+travel_china\main_task.o: ..\MDK-ARM\openmv.h
+travel_china\main_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

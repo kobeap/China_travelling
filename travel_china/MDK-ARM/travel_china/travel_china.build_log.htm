@@ -22,16 +22,28 @@ Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
 C:\Users\15144\Desktop\travel_china\MDK-ARM\travel_china.uvprojx
-Project File Date:  08/02/2022
+Project File Date:  08/05/2022
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'travel_china'
 compiling map_message.c...
+compiling barrier.c...
+..\application\barrier.c(418): warning:  #550-D: variable "num"  was set but never used
+  	float num;
+..\application\barrier.c: 1 warning, 0 errors
+compiling map.c...
+..\application\map.c(113): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  		Node[i].speed*=1.5;	
+..\application\map.c(283): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  				if(0.5*nodesr.nowNode.speed>500)
+..\application\map.c(251): warning:  #177-D: variable "cnt"  was declared but never referenced
+  	static u8 cnt = 0;
+..\application\map.c: 3 warnings, 0 errors
 linking...
-Program Size: Code=40880 RO-data=932 RW-data=3576 ZI-data=19856  
+Program Size: Code=40952 RO-data=932 RW-data=3668 ZI-data=19852  
 FromELF: creating hex file...
-"travel_china\travel_china.axf" - 0 Error(s), 0 Warning(s).
+"travel_china\travel_china.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -55,7 +67,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:04
 </pre>
 </body>
 </html>

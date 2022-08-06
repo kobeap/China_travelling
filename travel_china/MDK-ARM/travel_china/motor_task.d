@@ -66,3 +66,5 @@ travel_china\motor_task.o: ..\module\bsp_linefollower.h
 travel_china\motor_task.o: ..\Math\sin_generate.h
 travel_china\motor_task.o: ..\module\bsp_buzzer.h
 travel_china\motor_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+travel_china\motor_task.o: ..\MDK-ARM\openmv.h
+travel_china\motor_task.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

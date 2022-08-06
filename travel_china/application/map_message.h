@@ -4,8 +4,8 @@
 #include "sys.h"
 #include "map.h"
 
-extern unsigned char ConnectionNum[50];
-extern unsigned char Address[50];
+extern unsigned char ConnectionNum[51];
+extern unsigned char Address[52];
 
 
 #endif

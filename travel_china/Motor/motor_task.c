@@ -9,6 +9,7 @@
 #include "bsp_linefollower.h"
 #include "sin_generate.h"
 #include "bsp_buzzer.h"
+#include "openmv.h"
 TaskHandle_t motor_handler;
 int dirct[4] = {-1,-1,1,1};  
 volatile uint8_t PIDMode;
@@ -32,7 +33,6 @@ void motor_task(void *pvParameters){
 //			printf("%f\r\n",motor_all.encoder_avg);
 			motor_all.Distance =((motor_all.encoder_avg * 6.8f * PI)/(572.0f));//转换为1米
 //            printf("pid=%d\r\n",PIDMode);//
-		
 //			printf("%f\r\n",imu.pitch);
 		//陀螺仪自平衡->循迹
 			if (line_gyro_switch == 1)    //这里的line_gyro_switch是在PIDMODE切换情况下所产生的标志位

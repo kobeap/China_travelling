@@ -64,7 +64,7 @@ enum MapNode {	//MapNode
 	C4, C5, B4, B5, B6, B7, 
 	N16, N18, N19,
 	P7, N20, N22, C6,
-	C7, C8, C9, P8,
+	C7, C8, C9, P8,N11
 };
 
 /**************************************/
@@ -84,7 +84,7 @@ typedef struct _node{
 	u8 function;    //结点函数
 }NODE;
 
-extern NODE Node[118];
+extern NODE Node[122];
 /*************************/
 //flag 0位：1编码器清零请求，0清零完毕
 //flag 1位：启动路口判断

@@ -12,6 +12,7 @@
 #include "bsp_led.h"
 #include "turn.h"
 #include "map.h"
+#include "openmv.h"
 /*
 开始任务
 */
@@ -48,7 +49,8 @@ void user_init(void){
 	IIC_Init();	
 	Rudder_Init();        //舵机初始化 
 	gyro_init(115200);
-
+	mv_init(115200);
+//	open_mv();//
 	motor_init();
 	delay_ms(1000);
 	float mpuZ_reset_val;
@@ -58,7 +60,7 @@ void user_init(void){
 		delay_ms(20);
 		mpuZ_reset_val += imu.yaw;  
 	}
-	mpuZ_reset_val /= 10;   // 这是当前的0°角
+	mpuZ_reset_val /= 10;   // 
 	mpuZreset(mpuZ_reset_val, nodesr.nowNode.angle);//把此时角度变为此结点角度
 }
 

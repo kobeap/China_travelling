@@ -823,6 +823,16 @@
               <FileType>5</FileType>
               <FilePath>..\module\bsp_linefollower.h</FilePath>
             </File>
+            <File>
+              <FileName>openmv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\openmv.c</FilePath>
+            </File>
+            <File>
+              <FileName>openmv.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\openmv.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -837,16 +847,6 @@
               <FileName>barrier.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\application\barrier.h</FilePath>
-            </File>
-            <File>
-              <FileName>ican_test.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\ican_test.c</FilePath>
-            </File>
-            <File>
-              <FileName>ican_test.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\application\ican_test.h</FilePath>
             </File>
             <File>
               <FileName>map.c</FileName>
