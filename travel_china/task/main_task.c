@@ -39,9 +39,12 @@ void main_task(void *pvParameters){
 //		Go_Line(500);
 //        vTaskDelay(5);
 //	runWithAngle(0,200);
-//		Barrier_HighMountain();
-		Barrier_WavedPlate(120);
-//	    Cross();	
+//		Barrier_HighMountain(450);
+//		Barrier_WavedPlate(120);
+	    Cross();	
+//		angle.AngleT=-90;
+//		pid_mode_switch(is_Turn);
+//		QQB_1();
 	vTaskDelayUntil(&xLastWakeTime, (5/portTICK_RATE_MS));//¾ø¶ÔÐÝÃß5ms // INCLUDE_vTaskDelayUntil 1
 
 	}

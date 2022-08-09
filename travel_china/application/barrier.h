@@ -2,7 +2,7 @@
 #define __BARRIER_H
 
 #include "sys.h"
-#define basic_p   -8
+#define basic_p   -5
 #define Up_pitch   basic_p+12   //while(imu.pitch<Up_pitch)  出循环 刚上桥
 #define Down_pitch basic_p-12   //while(imu.pitch>Down_pitch)出循环 刚下桥 
 #define After_down basic_p-3    //while(imu.pitch<After_down)出循环下完 在平地
@@ -14,7 +14,7 @@ void Barrier_Hill(uint8_t order) ;
 void back(void);
 void view1(void);//打景点	
 void Sword_Mountain(void);
-void Barrier_HighMountain(void);
+void Barrier_HighMountain(float speed);
 void Barrier_Down_HighMountain(float speed);
 void view(void);
 void Barrier_WavedPlate(float lenght);

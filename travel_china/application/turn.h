@@ -16,6 +16,7 @@ void mpuZreset(float sensorangle ,float referangle);
 float getAngleZ(void);
 	
 uint8_t Turn_Angle(float Angle);
+uint8_t Turn_Angle1(float Angle);
 void Turn_Angle_Relative(float Angle1);
 uint8_t runWithAngle(float angle_want,float speed);
 void AdCircle(float speed, float radius);

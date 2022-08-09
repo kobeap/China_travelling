@@ -16,10 +16,11 @@ void motor_task_create(void);
 
 enum PID_Mode {
 	is_No = 0,  //关闭所有操作
-	is_Free,   //保留切换前的状态
-	is_Line,   //循迹2
-	is_Turn,   //转弯
-	is_Gyro   //自平衡4
+	is_Free,   //保留切换前的状态1
+	is_Line,   //循迹22
+	is_Turn,   //转弯3
+	is_Gyro,   //自平衡4
+	is_sp
 };
 
 

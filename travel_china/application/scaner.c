@@ -157,9 +157,10 @@ uint8_t Line_Scan(SCANER *scaner, unsigned char sensorNum, int8_t edge_ignore)
 		{
 				lednum_tmp += (scaner->detail>>(sensorNum-1-i))&0X01;
 				error += ((scaner->detail>>(sensorNum-1-i))&0X01) * line_weight[i];
-		}	
+		}
+        		
 	}
-	if(lednum==0)
+	if(lednum==0|lednum_tmp==0)
 	{
 		error=0;
 	}

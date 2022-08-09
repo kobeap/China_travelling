@@ -24,7 +24,10 @@ struct Map_State map = {0,0};
 //u8 route [100] = {B1,N1,P1,N1,B2,N4,N5,N6,P4,N6,N5,N4,N3,P3,N3,N10,0XFF};    //走门路线
 //u8 route[100]={B1,N1,P1,N1,B2,N4,N5,N6,P4,N6,N5,N4,N3,P3,0xff};
 //u8 route[100]={B2,N4,N5,N6,P4,N6,N5,N4,N3,P3,N3,N4,N5,N6,P4,0xff};
-u8 route[100]={N13,N18,B5,N19,C6,B7,N22,C9,G1,P8,G1,C9,N22,B6,N20,P7,N20,0XFF};
+//N13,N18,B5,N19,C6,B7,N22,C9,G1,
+//u8 route[100]={B1,N1,P1,N1,B2,N4,N3,P3,N3,N8,N12,N13,P6,N13,N18,B5,N19,C6,B7,N22,C9,G1,P8,G1,C9,N22,B6,N20,P7,N20,C4,0XFF};
+// u8 route[100]={C4,C8,C7,N14,C3,N9,B9,0XFF};
+ u8 route[100]={N7,B8,0XFF};
 //u8 route[100] = {P7,N20,C4,C8,C7,N14,C3,N9,B9,N7,P5,N7,0XFF};   //qqb
 
 //u8 route[100] = {B9,N7,0XFF};
@@ -78,6 +81,14 @@ void mapInit()
 //	nodesr.nowNode.step= 70;//60               
 //	nodesr.nowNode.flag = CRIGHT;    //CLEFT|RIGHT_LINE
 	
+//	nodesr.nowNode.nodenum = N20;		//起始点   //N2
+//	nodesr.nowNode.angle = 180;		//起始角度   //0
+//	nodesr.nowNode.function = 1;	//起始函数   //1
+//	nodesr.nowNode.speed = 300;//300             
+//	nodesr.nowNode.step= 20;//60               
+//	nodesr.nowNode.flag = CLEFT;    //CLEFT|RIGHT_LINE
+	
+	
 //	nodesr.nowNode.nodenum = N6;		//起始点   //N2
 //	nodesr.nowNode.angle = 0;		//起始角度   //0
 //	nodesr.nowNode.function = Special_node;	//起始函数   //1
@@ -99,18 +110,46 @@ void mapInit()
 //	nodesr.nowNode.step= 270;//60               
 //	nodesr.nowNode.flag =1;    //CLEFT|RIGHT_LINE
 	
-	nodesr.nowNode.nodenum = P6;		//起始点   //N2
-	nodesr.nowNode.angle =180;		//起始角度   //0
-	nodesr.nowNode.function = UpStage;	//起始函数   //1
-	nodesr.nowNode.speed = 600;//300             
-	nodesr.nowNode.step= 135;//60               
-	nodesr.nowNode.flag =1;    //CLEFT|RIGHT_LINE
+//	nodesr.nowNode.nodenum = P6;		//起始点   //N2
+//	nodesr.nowNode.angle =180;		//起始角度   //0
+//	nodesr.nowNode.function = UpStage;	//起始函数   //1
+//	nodesr.nowNode.speed = 600;//300             
+//	nodesr.nowNode.step= 135;//60               
+//	nodesr.nowNode.flag =1;    //CLEFT|RIGHT_LINE
+
+//    nodesr.nowNode.nodenum = G1;		//起始点   //N2
+//	nodesr.nowNode.angle =180;		//起始角度   //0
+//	nodesr.nowNode.function = BLBS;	//起始函数   //1
+//	nodesr.nowNode.speed = 300;//300             
+//	nodesr.nowNode.step= 60;//60               
+//	nodesr.nowNode.flag =1;    //CLEFT|RIGHT_LINE
 //	for(i=0;i<107;i++)				//把地图长度信息的厘米转化成编码器数
 //		Node[i].step*=58.22;
 //	for(i=0;i<107;i++)				//把地图长度信息的厘米转化成编码器数
 //		Node[i].flag|=STOPTURN;
-	for(i=0;i<118;i++)			//全地图速度调整
-		Node[i].speed*=1.5;	
+
+
+//	nodesr.nowNode.nodenum = N7;		//起始点   //N2
+//	nodesr.nowNode.angle = -60;		//起始角度   //0
+//	nodesr.nowNode.function = 1;	//起始函数   //1
+//	nodesr.nowNode.speed = 150;//300             
+//	nodesr.nowNode.step= 30;//60               
+//	nodesr.nowNode.flag = CLEFT|STOPTURN|DLEFT;    //CLEFT|RIGHT_LINE
+//    nodesr.nowNode.nodenum = N9;		//起始点   //N2
+//	nodesr.nowNode.angle = 180;		//起始角度   //0
+//	nodesr.nowNode.function = Special_node;	//起始函数   //1
+//	nodesr.nowNode.speed = 300;//300             
+//	nodesr.nowNode.step= 20;//60               
+//	nodesr.nowNode.flag = CLEFT|RIGHT_LINE;    //CLEFT|RIGHT_LINE
+
+	nodesr.nowNode.nodenum = P5;		//起始点   //N2
+	nodesr.nowNode.angle = 90;		//起始角度   //0
+	nodesr.nowNode.function = UpStage;	//起始函数   //1
+	nodesr.nowNode.speed = 300;//300             
+	nodesr.nowNode.step= 82;//60               
+	nodesr.nowNode.flag = NO;    //CLEFT|RIGHT_LINE
+//	for(i=0;i<118;i++)			//全地图速度调整
+//		Node[i].speed*=2;	    
 }
 
 
@@ -242,6 +281,7 @@ u8 deal_arrive()
 	return 0;
 }
 
+
 void Cross()
 {			
 	float num = 0;
@@ -275,19 +315,23 @@ void Cross()
 			 }
 			else
 			{
-				motor_all.Cincrement = 30;	//默认加速度 原来是25
+				motor_all.Cincrement = 20;	//默认加速度 原来是25
 				if ((nodesr.nowNode.flag & SLOWDOWN) == SLOWDOWN)
 				{
-					motor_all.Cspeed = 100;
-				}
-				if(0.5*nodesr.nowNode.speed>500)
-				{
-					motor_all.Cspeed=700;// 原来 40 
+					motor_all.Cspeed = 300;
 				}
 				else
 				{
-					motor_all.Cspeed=nodesr.nowNode.speed;// 原来是0.5    0.9当前最好
+					if(0.5*nodesr.nowNode.speed>500)
+					{
+						motor_all.Cspeed=800;// 原来 40 
+					}
+					else
+					{
+						motor_all.Cspeed=nodesr.nowNode.speed;// 原来是0.5    0.9当前最好
+					}
 				}
+				
 			}
 		}
 		else//未达到0.7的距离
@@ -308,18 +352,18 @@ void Cross()
 			
 			buzzer_on();
 
-			if(nodesr.nowNode.nodenum == N8)
-			{
-				delay_ms(50);
-			}
-			if(nodesr.nowNode.nodenum == N13)
-			{
-				delay_ms(200);
-			}
-			else
-			{
+//			if(nodesr.nowNode.nodenum == N8)
+//			{
+//				delay_ms(50);
+//			}
+//			if(nodesr.nowNode.nodenum == N13)
+//			{
+//				delay_ms(200);
+//			}
+//			else
+//			{
 				delay_ms(100);
-			}
+//			}
 			buzzer_off();
 			
 		}	
@@ -440,7 +484,7 @@ void map_function(u8 fun)
 		case BLBS       :Barrier_WavedPlate(50);break;//短减速板 速度，长度
 		case BLBL		    :Barrier_WavedPlate(120);break;//长减速板 速度，长度
 		case DOOR	  	  :door();break;//打门
-		case BHM        :Barrier_HighMountain(); break;//上珠峰
+		case BHM        :Barrier_HighMountain(450); break;//上珠峰
 		case Scurve	  	:S_curve();  break;
 		case IGNORE     :ignore_node(); break;  //忽略该节点
 		case UNDER      :undermou();break;

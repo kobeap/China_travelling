@@ -34,7 +34,8 @@ void motor_task(void *pvParameters){
 			motor_all.Distance =((motor_all.encoder_avg * 6.8f * PI)/(572.0f));//转换为1米
 //            printf("pid=%d\r\n",PIDMode);//
 //			printf("%f\r\n",imu.pitch);
-			printf("%d\r\n",Scaner.detail);
+//			printf("%f\r\n",motor_all.Distance);
+		
 		//陀螺仪自平衡->循迹
 			if (line_gyro_switch == 1)    //这里的line_gyro_switch是在PIDMODE切换情况下所产生的标志位
 			{
@@ -57,18 +58,9 @@ void motor_task(void *pvParameters){
 			{
 				if (PIDMode == is_Line)
 				{
-//					if(getline_error())
-//					{
-//						motor_all.Gspeed = 300;
-//						gradual_cal(&TG_speed, motor_all.Gspeed, motor_all.Gincrement);			
-//						runWithAngle(angle.AngleG, TG_speed.Now);
-//					}
-//					else
-//					{
 					    getline_error();
 						gradual_cal(&TC_speed, motor_all.Cspeed, motor_all.Cincrement);
 						Go_Line(TC_speed.Now);
-//					}
 				}
 				else
 					motor_all.Cspeed = 0;
@@ -81,7 +73,6 @@ void motor_task(void *pvParameters){
 						gyroT_pid = (struct P_pid_obj){0,0,0,0,0,0};
 					}
 				}
-
 				//自平衡PID控制
 				if (PIDMode == is_Gyro)
 				{ 
@@ -93,7 +84,18 @@ void motor_task(void *pvParameters){
 			}
 			
 			
-//    		runWithAngle(0,700);	
+//    		runWithAngle(0,700);
+//           if(PIDMode==is_sp)
+//			{
+//				if (Turn_Angle1(angle.AngleT))
+//				{
+//					gyroT_pid = (struct P_pid_obj){0,0,0,0,0,0};
+//				}
+//			}	
+//			else
+//			{
+				
+//			}
 			motor_L0.target = motor_L1.target = motor_all.Lspeed;
 			motor_R0.target = motor_R1.target = motor_all.Rspeed;
 			mouse++;
@@ -102,7 +104,7 @@ void motor_task(void *pvParameters){
 //						LED_twinkle();
 				HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_1);
 			}
-
+	
 
 			incremental_PID(&motor_L0, &motor_pid_paramL0);
 			incremental_PID(&motor_L1, &motor_pid_paramL1);
@@ -184,6 +186,10 @@ void pid_mode_switch(uint8_t target_mode)
 			gyroG_pid = (struct P_pid_obj){0,0,0,0,0,0,0};
 			TG_speed = (struct Gradual){0,0,0};
 			gyroT_pid = (struct P_pid_obj){0,0,0,0,0,0,0};
+			break;
+		}
+		case is_sp :
+		{
 			break;
 		}
 	}

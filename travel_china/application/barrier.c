@@ -22,11 +22,11 @@
 
 
 #define BACK_SPEED  -300
-#define BACK_SPEED1 -100
+#define BACK_SPEED1 -200
 #define GOSPEED 10
 
 extern int BW_num[];
-int value;//openmv接口
+uint8_t  value;//openmv接口
 uint8_t special_arrive=0;
 //防抖动系列函数
 //1._shake在平台识别过程中，防止因一些意外因素导致车提前停止,同时完成撞板的目的
@@ -120,12 +120,12 @@ void Stage()		//flag==1时取绝度角度，flag==0时取相对角度
 	{
 		angle.AngleG = getAngleZ();//自平衡走的角度
 		pid_mode_switch(is_Gyro);
-		motor_all.Gspeed = 300;
+		motor_all.Gspeed = 400;
 	}
 	else{
 		angle.AngleG = nodesr.nowNode.angle;//自平衡走的角度
 		pid_mode_switch(is_Gyro);
-		motor_all.Gspeed = 300;
+		motor_all.Gspeed = 400;
 	}
     while(imu.pitch<Up_pitch)
 	{
@@ -254,6 +254,24 @@ void Special_Node()
 		motor_all.Gspeed=300;
 		pid_mode_switch(is_Gyro);
 	}
+    else if((nodesr.nowNode.nodenum==N9)&((nodesr.nowNode.flag&CLEFT)==CLEFT))//C3-N9
+	{
+		float num=0;
+		while(deal_arrive()!=1)
+		{
+			vTaskDelay(2);
+		}
+		num=motor_all.Distance;
+		while(motor_all.Distance-num<30)
+		{
+			vTaskDelay(2);
+		}
+		while(deal_arrive()!=1)
+		{
+			vTaskDelay(2);
+		}
+		special_arrive=1;
+	}
 	else
 	{
 		angle.AngleG=getAngleZ();
@@ -329,7 +347,7 @@ void Barrier_Bridge(float step,float speed)	//过长桥
 	{
 		vTaskDelay(2);
 	}//上桥完毕
-	motor_all.Gspeed = 500;   //原来65   90
+	motor_all.Gspeed = 800;   //原来65   90
 	while(imu.pitch > Down_pitch)          
 	{
 		infrared_open();
@@ -349,12 +367,12 @@ void Barrier_Bridge(float step,float speed)	//过长桥
 		}
 		if(infrared.outside_right==0)
 		{
-			angle.AngleG = getAngleZ() + 3;
+			angle.AngleG = getAngleZ() + 2;
             buzzer_on();
 		}
 		else if(infrared.outside_left==0)
 		{
-				angle.AngleG = getAngleZ() - 3; 
+				angle.AngleG = getAngleZ() - 2; 
 				buzzer_on();
 		}
 		else{
@@ -362,7 +380,7 @@ void Barrier_Bridge(float step,float speed)	//过长桥
 			buzzer_off();
 		}
 		if (motor_all.Distance-num < 200)
-			motor_all.Gspeed = 500;     //原来是80  90
+			motor_all.Gspeed = 800;     //原来是80  90
 		else
 			motor_all.Gspeed = 500;      //原来是65   75
 		vTaskDelay(2);
@@ -457,7 +475,7 @@ void Sword_Mountain()
 /*****************************************************************************
 上珠峰，包含下珠峰
 *****************************************************************************/
-void Barrier_HighMountain()
+void Barrier_HighMountain(float speed)
 {
 	float origin_turnM=motor_all.GyroT_speedMax;
 	float num = 0;
@@ -466,7 +484,7 @@ void Barrier_HighMountain()
 	line_pid_param.kp = 25;
 	line_pid_param.kd = 15;
 	gyroG_pid_param.kp=10;
-	motor_all.Cspeed = 400; //最开始还没上坡的速度 90
+	motor_all.Cspeed = speed; //最开始还没上坡的速度 90
 	motor_all.Cincrement = 20;
 	pid_mode_switch(is_Line);
 	while(imu.pitch<Up_pitch)
@@ -475,12 +493,12 @@ void Barrier_HighMountain()
 	}//刚上桥
     num=motor_all.Distance;
 	motor_all.Cincrement = 20; //上坡的速度  2
-	motor_all.Cspeed = 400;//80
+	motor_all.Cspeed = speed;//80
 	while(motor_all.Distance-num<90)//上坡走循迹
 	{
 		vTaskDelay(2);
 	}
-	motor_all.Gspeed = 400; //第一个平地自平衡	
+	motor_all.Gspeed = speed; //第一个平地自平衡	
 	angle.AngleG=getAngleZ();
     pid_mode_switch(is_Gyro);
     buzzer_on();
@@ -495,7 +513,7 @@ void Barrier_HighMountain()
 	buzzer_off();
 	
 	
-	motor_all.Cspeed = 400; 
+	motor_all.Cspeed = speed; 
 	motor_all.Cincrement = 20;
 	pid_mode_switch(is_Line);
 	num=motor_all.Distance;
@@ -503,7 +521,7 @@ void Barrier_HighMountain()
 	{
 		vTaskDelay(2);
 	}
-	motor_all.Gspeed = 400; //第二次自平衡	
+	motor_all.Gspeed = speed; //第二次自平衡	
 	angle.AngleG=getAngleZ();
     pid_mode_switch(is_Gyro);
 	buzzer_on();
@@ -533,7 +551,7 @@ void Barrier_HighMountain()
 		vTaskDelay(2);
 	}
 	CarBrake();
-	motor_all.GyroT_speedMax=300;
+	motor_all.GyroT_speedMax=400;
 	Turn_Angle_Relative(179);
 	while(fabs(angle.AngleT - getAngleZ())>2) //判断误差
 	{
@@ -547,7 +565,7 @@ void Barrier_HighMountain()
 	
 
     
-    Barrier_Down_HighMountain(400);
+    Barrier_Down_HighMountain(450);
 
 	line_pid_param = origin_param;
 	gyroG_pid_param=origin_param1;
@@ -564,25 +582,35 @@ void Barrier_Down_HighMountain(float speed)
 	float num=0;
 	pid_mode_switch(is_Gyro);
 	angle.AngleG=getAngleZ();
-	motor_all.Gspeed=speed;
+	motor_all.Gspeed=450;
 	while(imu.pitch>Down_pitch)
 	{
 		vTaskDelay(2);
 	}//下坡
 	pid_mode_switch(is_Line);
-	motor_all.Cspeed=speed;
+	motor_all.Cspeed=450;
 	num=motor_all.Distance;
 	while(motor_all.Distance-num<80)
 	{
 		vTaskDelay(2);
 	}
+	buzzer_on();
 	pid_mode_switch(is_Gyro);
 	angle.AngleG=getAngleZ();
-	motor_all.Gspeed=speed;
+	motor_all.Gspeed=450;
 	while(imu.pitch<After_down)
 	{
 		vTaskDelay(2);
 	}//第一个平地
+	num=motor_all.Distance;
+	while(motor_all.Distance-num<20)
+	{
+		vTaskDelay(2);
+	}
+	buzzer_off();
+	pid_mode_switch(is_Gyro);
+	angle.AngleG=getAngleZ();
+	motor_all.Gspeed=450;
 	while(Scaner.ledNum<=12)
 	{
 		getline_error();
@@ -593,17 +621,22 @@ void Barrier_Down_HighMountain(float speed)
 		getline_error();
 		vTaskDelay(2);
 	}//照到白线了
-	pid_mode_switch(is_Turn);
 	if((Scaner.detail&0xF000)>0)//最左边随意4个灯亮
 	{
+		pid_mode_switch(is_Turn);
 		angle.AngleT=getAngleZ()+10;
 		buzzer_on();
 	}
 	if((Scaner.detail&0xF)>0)//最左边随意4个灯亮
 	{
+		pid_mode_switch(is_Turn);
 		angle.AngleT=getAngleZ()-10;
 		buzzer_on();
 	}
+	while(imu.pitch>Down_pitch)
+	{
+		vTaskDelay(2);
+	}//下坡
 	pid_mode_switch(is_Line);
 	motor_all.Cspeed=speed;
 	num=motor_all.Distance;
@@ -678,18 +711,21 @@ void back()
 *****************************************************************************/
 void Barrier_WavedPlate(float lenght)//波浪板长度
 {
-//	buzzer_on();
+	
 	float num = 0;
-	motor_all.Cspeed = 200;   
+    struct PID_param origin_param = line_pid_param;
+	line_pid_param.kp=50;
+	motor_all.Cspeed = 300;   
 	pid_mode_switch(is_Line);
-	scaner_set.EdgeIgnore=4;
+//	scaner_set.EdgeIgnore=2;
 	num = motor_all.Distance;
 	while( motor_all.Distance-num <120)
 	{
+		scaner_set.EdgeIgnore=6;
 		getline_error();
-		vTaskDelay(5);
+		vTaskDelay(2);
 	}
-//    buzzer_off();	
+	line_pid_param=origin_param;
 	nodesr.nowNode.function=0;
 	nodesr.flag|=0x04;	//到达路口
 }
@@ -700,7 +736,7 @@ void South_Pole(float length)
 	float num = 0;
 	struct PID_param origin_param = line_pid_param;
 	struct PID_param origin_param1=gyroT_pid_param;
-	motor_all.Cspeed = 300;
+	motor_all.Cspeed = 450;
 	pid_mode_switch(is_Line);
 	line_pid_param.kp = 25;
 	line_pid_param.kd = 15;
@@ -710,7 +746,7 @@ void South_Pole(float length)
 		vTaskDelay(2);
 	}//上坡
 	
-	motor_all.Cspeed = 350;
+	motor_all.Cspeed = 450;
 	num = motor_all.Distance;
 	while(motor_all.Distance - num < 90)
 	{
@@ -719,7 +755,7 @@ void South_Pole(float length)
 	
 	angle.AngleG = getAngleZ();
 	pid_mode_switch(is_Gyro);
-	motor_all.Gspeed = 300;
+	motor_all.Gspeed = 450;
 
 	while(Infrared_ahead == 0)
 	{
@@ -758,7 +794,7 @@ void South_Pole(float length)
 	}	
 	motor_pid_clear();
 	
-	motor_all.Cspeed = 300;
+	motor_all.Cspeed = 450;
 	pid_mode_switch(is_Line);
 	while(imu.pitch>Down_pitch)
 	{
@@ -774,219 +810,135 @@ void South_Pole(float length)
 	nodesr.flag|=0x04;	//到达路口
 }
 
-#if 0
+
+
+
 void QQB_1(void)
 {
-	float num = 0;
-	CatchsensorNum=-3.5;			//改变循迹中心点，在判断路口函数改回来
-	PIDMode=Catch;
-	motor_all.Cspeed=20;
-	while(Scaner.detail!=0);	//循迹板上跷跷板
-	PIDMode=Free;					
-	L0speed=20;L1speed=20;R0speed=20;R1speed=20;
-	while(imu.pitch>-15);		//检测到大角度，车子上跷跷板
-	delay_ms(500);
+	float num;
+	struct PID_param origin_param = line_pid_param;
+    struct PID_param origin_param1=gyroG_pid_param;
+	gyroG_pid_param.kp=15;
+//	gyroT_pid_param.outputMax = 200;
+//	gyroT_pid_param.outputMin = 200;
+	motor_pid_clear();
+	pid_mode_switch(is_Line);
+	motor_all.Cspeed = 150;  //给低速进入寻线
+	line_pid_param.kp = 105;    //拉大KP 
+	nodesr.nowNode.flag|=LEFT_LINE;
 	num=motor_all.Distance;
-	PIDMode=GYRO;				//等车子走上跷跷板再走自平衡
-	angle.AngleG=getAngleZ();
-	motor_all.Gspeed=15;
-	while(motor_all.Distance-num<700);			//读编码器走固定距离
-	CarBrake();					//停止
-	while(imu.pitch<15);		//等待跷跷板向下
-	delay_ms(600);				//等待跷跷板停下
-	PIDMode=Free;
-	L0speed=5;L1speed=5;R0speed=30;R1speed=30;
-	delay_ms(200);
-	CarBrake();	
-	if(Scaner.detail==0)
+	while(motor_all.Distance-num<20)
 	{
-		Turn_Angle(30,30);			//逆时针转40°
-		while(fabs(Turn_Angle_Targe-getAngleZ())>5);
+		vTaskDelay(2);
 	}
-	PIDMode=Catch;				//继续循迹
-	motor_all.Cspeed=20;
-	nodesr.nowNode.function=0;
-}
-#endif
-
-/*void QQB_1(void)
-{
-	float num;
-	struct PID_param origin_param = line_pid_param;
-	
-	num = motor_all.Distance;
-	
-	motor_pid_clear();
-	pid_mode_switch(is_Line);
-	motor_all.Cspeed = 30;  //给低速进入寻线 60
-	
-	scaner_set.CatchsensorNum = line_weight[7];   //给予左边权值
-	line_pid_param.kp = 45;    //拉大KP 45
-	
-	
-	if(nodesr.nowNode.nodenum == B9)
-	{	
-		while(fabs(motor_all.Distance - num) < 28);//适当调整
-		pid_mode_switch(is_No);
-		angle.AngleT = -92;//-89
-		pid_mode_switch(is_Turn);
-		while(fabs(angle.AngleT - getAngleZ())>5);
-		
-		angle.AngleG = -92;//-89
-		pid_mode_switch(is_Gyro);
-		motor_all.Gspeed = 20;
-		while(imu.pitch > Up_pitch);//还在平地
-		motor_all.Gspeed = 20;
-		while(imu.pitch <= Up_pitch );
-		
-//		//start开环
-//		while(imu.pitch > -1);//等待上坡
-//		buzzer_on();
-//		HAL_Delay(200);
-//		buzzer_off();
-//		motor_all.Lspeed = 20;
-//		motor_all.Rspeed = 25; 
-//		//end闭环
-		
-		while(imu.pitch <= -3);
-		CarBrake();
-		while(imu.pitch <= Down_pitch);
-		angle.AngleT = -25;
-		pid_mode_switch(is_Turn);
-		while(fabs(angle.AngleT - getAngleZ())>5);
-		
-	}
-	else if(nodesr.nowNode.nodenum == B8)
-	{	
-		while(fabs(motor_all.Distance - num) <32);
-		pid_mode_switch(is_No);
-		angle.AngleT = 90;
-		pid_mode_switch(is_Turn);
-		while(fabs(angle.AngleT - getAngleZ())>5);
-		
-		angle.AngleG = 90;
-		pid_mode_switch(is_Gyro);
-		motor_all.Gspeed = 30;
-		while(imu.pitch > Up_pitch);//还在平地
-		motor_all.Gspeed = 30;
-		while(imu.pitch <= Up_pitch );
-		
-//		//start开环
-//		while(imu.pitch > -1);//等待上坡
-//		motor_all.Lspeed = 18;
-//		motor_all.Rspeed = 25; 
-//		while(imu.pitch < -16);
-//		//end闭环
-		
-		CarBrake();
-		angle.AngleT = -25;
-		pid_mode_switch(is_Turn);
-		while(fabs(angle.AngleT - getAngleZ())>5);
-	}
-	
-	
-//	pid_mode_switch(is_Line);
-//	motor_all.Cspeed = 20;
-	scaner_set.CatchsensorNum = 0;
-	line_pid_param = origin_param;  //恢复原来的PID参数
-	nodesr.nowNode.function=0;
-	nodesr.flag|=0X04;	//到达路口
-	
-}*/
-
-void QQB_1(void)
-{
-	float num;
-	struct PID_param origin_param = line_pid_param;
-	
-	num = motor_all.Distance;
-	
-	motor_pid_clear();
-	pid_mode_switch(is_Line);
-	motor_all.Cspeed = 60;  //给低速进入寻线
-	
-	scaner_set.CatchsensorNum = line_weight[6];    //给予左边权值
-	line_pid_param.kp = 45;    //拉大KP 
-	
-	if(nodesr.nowNode.nodenum == B9)
-	{	
-		while(infrared.outside_right == 0);
-		CarBrake();
-		
-		buzzer_on();
-		
-		//转去跷跷板的正向
-		angle.AngleT = -90;
-		pid_mode_switch(is_Turn);
-		while(fabs(angle.AngleT - getAngleZ())>5);
-		/*angle.AngleT = 89;
-		pid_mode_switch(is_Turn);
-		while(fabs(angle.AngleT - getAngleZ())>5);*/
-		
-		angle.AngleG = -90;
-		pid_mode_switch(is_Gyro);
-		motor_all.Gspeed = 20;
-		while(imu.pitch > Up_pitch);//还在平地
-		while(imu.pitch <= Up_pitch )
+	if(nodesr.nowNode.nodenum==B9)
+	{
+		scaner_set.CatchsensorNum = line_weight[4];    //给予左边权值
+		num=motor_all.Distance;
+		while(motor_all.Distance-num<52)
 		{
-			buzzer_off();
-			if (infrared.outside_left == 1)
-				angle.AngleG -= 4; 
-			else if (infrared.outside_right == 1)
-				angle.AngleG += 4; 
-			else
-				angle.AngleG = nodesr.nowNode.angle;
+			vTaskDelay(2);
 		}
-		while(imu.pitch <= -2);
-		HAL_Delay(800);
-		buzzer_off();
-		CarBrake();
-		while(imu.pitch <= Down_pitch);
-		motor_all.Gspeed = 20;
-		HAL_Delay(800);
-		angle.AngleT = -55;
+
 		pid_mode_switch(is_Turn);
-		while(fabs(angle.AngleT - getAngleZ())>5);
-		//while(imu.pitch <= Down_pitch);
-		
-		/*angle.AngleT = 25;
-		pid_mode_switch(is_Turn);
-		while(fabs(angle.AngleT - getAngleZ())>5);*/
-		
-	}
-	else if(nodesr.nowNode.nodenum == B8)
-	{	
-		while(fabs(motor_all.Distance - num) <68);
-		angle.AngleT = 90;
-		pid_mode_switch(is_Turn);
-		while(fabs(angle.AngleT - getAngleZ())>5);
-		angle.AngleG = 90;
+		angle.AngleT=-90;
+		while(fabs(getAngleZ()-angle.AngleT)>2)
+		{
+			vTaskDelay(2);
+		}
+		angle.AngleG=getAngleZ();
+		motor_all.Gspeed=250;
 		pid_mode_switch(is_Gyro);
-		motor_all.Gspeed = 30;
-		while(imu.pitch > Up_pitch);//还在平地
-		motor_all.Gspeed = 30;
-		while(imu.pitch <= Up_pitch );
-		CarBrake();
-//		angle.AngleT = -25;
-//		pid_mode_switch(is_Turn);
-//		while(fabs(angle.AngleT - getAngleZ())>5);
+
+		num=motor_all.Distance;
+		while(motor_all.Distance-num<68)
+		{
+			infrared_open();
+			buzzer_on();
+			if(infrared.outside_left==0&infrared.outside_right==1)
+			{
+				angle.AngleG=getAngleZ()-2;
+			}
+			else if(infrared.outside_right==0&infrared.outside_left==1)
+			{
+					angle.AngleG=getAngleZ()+2;
+			}
+			else
+			{
+				angle.AngleG=getAngleZ();
+			}
+				vTaskDelay(2);
+		}
+			CarBrake();
+			vTaskDelay(1000);
+			angle.AngleG=getAngleZ();
+			motor_all.Gspeed=200;
+			pid_mode_switch(is_Gyro);
+			while(imu.pitch>Down_pitch)
+			{
+				vTaskDelay(2);
+			}
+	//		CarBrake();
+			buzzer_off();
 	}
-	
-	
-//	pid_mode_switch(is_Line);
-//	pid_mode_switch(is_Gyro);
-//	num = motor_all.Distance;
-//	motor_all.Gspeed = 10;
-//	while(fabs(motor_all.Distance - num) < 5);
-	scaner_set.CatchsensorNum = line_weight[8];    //给予左边权值
-	line_pid_param.kp = 45;    //拉大KP 
-	motor_all.Cspeed = 60;  //给低速进入寻线
-	pid_mode_switch(is_Line);
-	num = motor_all.Distance;
-	while(fabs(motor_all.Distance - num) < 40);
+	if(nodesr.nowNode.nodenum==B8)
+	{
+		scaner_set.CatchsensorNum = line_weight[4];    //给予左边权值
+		num=motor_all.Distance;
+		while(motor_all.Distance-num<45)
+		{
+			vTaskDelay(2);
+		}
+		pid_mode_switch(is_Turn);
+		angle.AngleT=90;
+		while(fabs(getAngleZ()-angle.AngleT)>2)
+		{
+			vTaskDelay(2);
+		}
+		angle.AngleG=getAngleZ();
+		motor_all.Gspeed=250;
+		pid_mode_switch(is_Gyro);
+
+		num=motor_all.Distance;
+		while(motor_all.Distance-num<68)
+		{
+			infrared_open();
+			buzzer_on();
+			if(infrared.outside_left==0&infrared.outside_right==1)
+			{
+				angle.AngleG=getAngleZ()-2;
+			}
+			else if(infrared.outside_right==0&infrared.outside_left==1)
+			{
+					angle.AngleG=getAngleZ()+2;
+			}
+			else
+			{
+				angle.AngleG=getAngleZ();
+			}
+				vTaskDelay(2);
+		}
+			CarBrake();
+			vTaskDelay(1000);
+			angle.AngleG=getAngleZ();
+			motor_all.Gspeed=200;
+			pid_mode_switch(is_Gyro);
+			while(imu.pitch>Down_pitch)
+			{
+				vTaskDelay(2);
+			}
+	//		CarBrake();
+			buzzer_off();
+	}
+//	CarBrake();
+//	while(1)
+//	{
+//		vTaskDelay(2);
+//	}
 	line_pid_param = origin_param;  //恢复原来的PID参数
-	scaner_set.CatchsensorNum = 0;
+	gyroG_pid_param=origin_param1;
 	nodesr.nowNode.function=0;
+	scaner_set.CatchsensorNum =0;
 	nodesr.flag|=0X04;	//到达路口
 	
 }

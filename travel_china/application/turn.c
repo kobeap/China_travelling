@@ -103,6 +103,47 @@ uint8_t Turn_Angle(float Angle)
 }
 
 /*****************************************************************************
+函数功能：陀螺仪Z轴结合PID原地转角度（后俩轮）
+					填要转到的角度(绝对角度)
+					用法：Target = ?,PIDMode = is_sp,while(fabs(getAngleZ()-Target)<1);
+*****************************************************************************/
+uint8_t Turn_Angle1(float Angle)	
+{
+	float GTspeed, now_angle;
+	
+	//临界处理
+	if(Angle>180)	Angle -= 360;
+	else if(Angle<-180)	Angle += 360;
+	
+	now_angle = getAngleZ();
+	if (fabsf(Angle-now_angle) < 2)
+	{
+		motor_L0.target=motor_L1.target=0;
+	    motor_R0.target=motor_R1.target=0;
+		gyroT_pid.integral = 0;
+		gyroT_pid.output = 0;
+		return 1;
+	}
+	
+	gyroT_pid.measure = need2turn(now_angle, Angle);
+	gyroT_pid.target = 0;
+
+	GTspeed = positional_PID(&gyroT_pid, &gyroT_pid_param);
+	
+	if(GTspeed >= motor_all.GyroT_speedMax) 
+		GTspeed = motor_all.GyroT_speedMax;
+	else if(GTspeed <= -motor_all.GyroT_speedMax) 
+		GTspeed = -motor_all.GyroT_speedMax;
+
+	motor_L1.target=GTspeed;
+	motor_R1.target=-GTspeed;
+    motor_L0.target=0;
+	motor_R0.target=0;
+	
+	return 0;
+}
+
+/*****************************************************************************
 函数功能：原地旋转360度
 		说明：运用多次旋转，设定阈值，到达目标值前进行更新
 *****************************************************************************/
